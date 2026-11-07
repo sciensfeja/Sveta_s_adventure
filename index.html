@@ -471,16 +471,25 @@
             }
         }
 
-        function goToNextPage() {
+       function goToNextPage() {
     const savedResult = localStorage.getItem('svetaQuestResult');
+    
     if (savedResult) {
         const result = JSON.parse(savedResult);
+        
+        // Для проверки: выведет твой текущий процент в консоль браузера (F12)
+        console.log("Твой текущий результат:", result.percentage + "%");
+
         if (result.percentage >= 80) {
             // Переход на Level 2
             window.location.href = 'level2.html'; 
         } else {
-            alert('📚 You need 80% to unlock Level 2! Please retake the test and do your best!');
+            // Если меньше 80%, показываем сообщение и говорим, сколько не хватило
+            alert(`📚 Твой результат: ${result.percentage}%. \n\nТебе нужно 80% или больше, чтобы разблокировать Level 2! Пожалуйста, пройди тест еще раз и постарайся на максимум! 💪`);
         }
+    } else {
+        // Если результат вдруг не сохранен
+        alert('⚠️ Результат теста не найден. Пожалуйста, пройди тест в Level 1 сначала!');
     }
 }
 
