@@ -472,17 +472,17 @@
         }
 
         function goToNextPage() {
-            const savedResult = localStorage.getItem('svetaQuestResult');
-            if (savedResult) {
-                const result = JSON.parse(savedResult);
-                if (result.percentage >= 80) {
-                    alert('🎉 Congratulations! Level 2 is loading...\n\n(Here we will add the next page soon!)');
-                    // window.location.href = 'level2.html'; // Uncomment when Level 2 is ready
-                } else {
-                    alert('📚 You need 80% to unlock Level 2! Please retake the test and do your best!');
-                }
-            }
+    const savedResult = localStorage.getItem('svetaQuestResult');
+    if (savedResult) {
+        const result = JSON.parse(savedResult);
+        if (result.percentage >= 80) {
+            // Переход на Level 2
+            window.location.href = 'level2.html'; 
+        } else {
+            alert('📚 You need 80% to unlock Level 2! Please retake the test and do your best!');
         }
+    }
+}
 
         function resetAndRetake() {
             if (confirm('⚠️ Are you sure? Your saved progress will be deleted!')) {
