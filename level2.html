@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2 — Sveta's Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px;
+        }
+        .game-container {
+            background: white; border-radius: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px; width: 100%; overflow: hidden; position: relative;
+        }
+        .header {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            padding: 30px; text-align: center; position: relative;
+        }
+        .header h1 { color: white; font-size: 2.2em; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header .subtitle { color: rgba(255,255,255,0.95); font-size: 1.15em; margin-top: 5px; font-weight: 600; }
+        .sveta-avatar {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            margin: 15px auto 0; display: flex; align-items: center; justify-content: center;
+            font-size: 3em; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .content { padding: 30px; min-height: 450px; }
+        .screen { display: none; text-align: center; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .menu-card {
+            background: white; border: 2px solid #e9ecef; border-radius: 16px; padding: 20px;
+            cursor: pointer; transition: all 0.3s ease; text-align: left; display: flex; align-items: center; gap: 15px;
+        }
+        .menu-card:hover { border-color: #4facfe; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(79, 172, 254, 0.2); }
+        .menu-icon { font-size: 2.5em; }
+        .menu-info h3 { color: #333; font-size: 1.2em; margin-bottom: 5px; }
+        .menu-info p { color: #666; font-size: 0.9em; }
+
+        .btn {
+            border: none; border-radius: 14px; padding: 12px 24px; font-size: 1em;
+            font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; color: white; margin: 5px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-primary { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .btn-secondary { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+        .btn-back { background: #e9ecef; color: #333; }
+        .btn-audio { background: linear-gradient(135deg, #f093fb, #f5576c); padding: 10px 20px; font-size: 0.95em; }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b, #ef4444); }
+        .btn-next-level { 
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
+            padding: 16px 32px; 
+            font-size: 1.2em;
+            margin-top: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Flashcards */
+        .flashcard-scene { width: 100%; height: 420px; perspective: 1000px; margin: 20px 0; }
+        .flashcard {
+            width: 100%; height: 100%; position: relative; transition: transform 0.6s;
+            transform-style: preserve-3d; cursor: pointer;
+        }
+        .flashcard.flipped { transform: rotateY(180deg); }
+        .flashcard-face {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            border-radius: 20px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .flashcard-front { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; }
+        .flashcard-back { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #333; transform: rotateY(180deg); }
+        .fc-word { font-size: 2.3em; font-weight: 900; margin-bottom: 8px; }
+        .fc-phonetic { font-size: 1.05em; opacity: 0.9; margin-bottom: 12px; font-style: italic; }
+        .fc-hint { font-size: 0.95em; opacity: 0.8; margin-top: 10px; }
+        .fc-translation { font-size: 1.8em; font-weight: 800; margin-bottom: 12px; }
+        .fc-definition {
+            font-size: 1em; font-style: italic; text-align: center; color: #155724;
+            background: rgba(255,255,255,0.5); padding: 10px 15px; border-radius: 12px;
+            margin-bottom: 12px; line-height: 1.4; max-width: 90%;
+        }
+        .fc-example { font-size: 1em; font-style: italic; text-align: center; color: #555; margin-bottom: 12px; }
+        .fc-type { font-size: 0.9em; background: rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 12px; margin-bottom: 10px; }
+        .fc-def-label { font-size: 0.8em; font-weight: 800; color: #155724; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+
+        /* Sentence Builder */
+        .sentence-schema {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-radius: 16px; padding: 18px; margin-bottom: 20px;
+            border: 2px solid #ffc107; text-align: left;
+        }
+        .schema-title { font-weight: 800; color: #856404; margin-bottom: 10px; font-size: 1.05em; }
+        .schema-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.9em; font-weight: 600; }
+        .legend-color { width: 16px; height: 16px; border-radius: 4px; }
+        .schema-formula { font-size: 1.1em; font-weight: 700; color: #333; line-height: 1.8; }
+        .schema-formula .subj { color: #2563eb; background: rgba(37, 99, 235, 0.1); padding: 2px 6px; border-radius: 6px; }
+        .schema-formula .verb { color: #dc2626; background: rgba(220, 38, 38, 0.1); padding: 2px 6px; border-radius: 6px; }
+        .schema-formula .obj { color: #16a34a; background: rgba(22, 163, 74, 0.1); padding: 2px 6px; border-radius: 6px; }
+        .schema-formula .adv { color: #ea580c; background: rgba(234, 88, 12, 0.1); padding: 2px 6px; border-radius: 6px; }
+
+        .mistakes-counter {
+            display: inline-block; background: #fee2e2; color: #dc2626;
+            padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .sentence-area {
+            background: #f8f9fa; border-radius: 16px; padding: 20px; min-height: 80px;
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; align-items: center;
+            margin-bottom: 20px; border: 2px dashed #dee2e6;
+        }
+        .word-bank { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .word-block {
+            background: white; border: 2px solid #4facfe; color: #333; padding: 10px 18px;
+            border-radius: 12px; font-weight: 700; font-size: 1.1em; cursor: pointer; transition: all 0.2s;
+        }
+        .word-block:hover { background: #4facfe; color: white; transform: scale(1.05); }
+        .word-block.used { opacity: 0.3; pointer-events: none; }
+        .word-block.in-sentence { background: #4facfe; color: white; border-color: #4facfe; }
+
+        /* Dialogue */
+        .dialogue-box {
+            background: #f8f9fa; border-radius: 16px; padding: 25px; margin: 20px 0;
+            text-align: left; border-left: 5px solid #43e97b;
+        }
+        .speaker { font-weight: 800; color: #43e97b; margin-bottom: 10px; font-size: 1.1em; }
+        .dialogue-text { font-size: 1.2em; color: #333; line-height: 1.6; margin-bottom: 20px; }
+        .choices { display: flex; flex-direction: column; gap: 10px; }
+        .choice-btn {
+            background: white; border: 2px solid #e9ecef; border-radius: 12px; padding: 15px;
+            font-family: 'Nunito', sans-serif; font-weight: 600; font-size: 1em; color: #333;
+            cursor: pointer; transition: all 0.3s; text-align: left;
+        }
+        .choice-btn:hover { border-color: #43e97b; background: #f0fff4; transform: translateX(5px); }
+
+        .feedback-msg { margin-top: 15px; padding: 15px; border-radius: 12px; font-weight: 700; display: none; line-height: 1.5; }
+        .feedback-msg.correct { background: #d4edda; color: #155724; display: block; }
+        .feedback-msg.wrong { background: #f8d7da; color: #721c24; display: block; }
+        .feedback-msg.reveal { background: #fff3cd; color: #856404; display: block; border: 2px solid #ffc107; }
+
+        .unit-badge {
+            display: inline-block; background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        /* Work on Errors Screen */
+        .error-card {
+            background: #fff5f5; border: 2px solid #feb2b2; border-radius: 14px;
+            padding: 18px; margin-bottom: 15px; text-align: left;
+        }
+        .error-card .correct-sentence {
+            background: #d4edda; border-left: 4px solid #28a745;
+            padding: 12px 15px; border-radius: 8px; margin: 10px 0;
+            font-weight: 700; color: #155724; font-size: 1.05em;
+        }
+        .error-card .rule {
+            background: #fff9e6; border-left: 4px solid #ffc107;
+            padding: 10px 15px; border-radius: 8px; color: #856404; font-size: 0.95em;
+        }
+        .error-card .label { font-weight: 800; color: #dc2626; font-size: 0.9em; text-transform: uppercase; }
+        .error-card .label-correct { font-weight: 800; color: #16a34a; font-size: 0.9em; text-transform: uppercase; }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.6em; }
+            .fc-word { font-size: 1.8em; }
+            .content { padding: 20px; }
+            .schema-legend { flex-direction: column; align-items: flex-start; }
+            .flashcard-scene { height: 480px; }
+            .fc-definition { font-size: 0.9em; }
+            .schema-formula { font-size: 0.95em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🌴 Level 2</h1>
+            <p class="subtitle">Sveta's Adventure Continues</p>
+            <div class="sveta-avatar">👩‍🏫</div>
+        </div>
+
+        <div class="content">
+            <!-- Main Menu -->
+            <div class="screen active" id="mainMenu">
+                <h2 style="color:#333; margin-bottom:10px;">Choose your activity!</h2>
+                <p style="color:#666;">Words from Unit 4 & Unit 9 📚</p>
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="showScreen('flashcardsScreen')">
+                        <div class="menu-icon">🃏</div>
+                        <div class="menu-info"><h3>Flashcards with Audio</h3><p>20 words with definitions, pronunciation & examples.</p></div>
+                    </div>
+                    <div class="menu-card" onclick="showScreen('sentenceScreen')">
+                        <div class="menu-icon">🧩</div>
+                        <div class="menu-info"><h3>Sentence Builder + Grammar</h3><p>Build sentences using the abstract grammar schema. 3 mistakes = show answer!</p></div>
+                    </div>
+                    <div class="menu-card" onclick="showScreen('dialogueScreen')">
+                        <div class="menu-icon">💬</div>
+                        <div class="menu-info"><h3>Beach Adventure</h3><p>A dialogue at the beach using your new words!</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. Flashcards Screen -->
+            <div class="screen" id="flashcardsScreen">
+                <div class="unit-badge" id="fcUnit">UNIT 4</div>
+                <h2 style="color:#333;">🃏 Flashcards</h2>
+                <p style="color:#666; margin-bottom:15px;">Tap the card to flip. Use 🔊 to hear pronunciation!</p>
+                <div class="flashcard-scene">
+                    <div class="flashcard" id="flashcard" onclick="flipCard()">
+                        <div class="flashcard-face flashcard-front">
+                            <div class="fc-type" id="fcType">adj.</div>
+                            <div class="fc-word" id="fcWord">appropriate</div>
+                            <div class="fc-phonetic" id="fcPhonetic">[əˈproʊpriət]</div>
+                            <button class="btn btn-audio" onclick="event.stopPropagation(); speakWord()">🔊 Listen</button>
+                            <div class="fc-hint">Tap to see translation & definition</div>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <div class="fc-translation" id="fcTranslation">подходящий</div>
+                            <div class="fc-def-label">📖 English Definition:</div>
+                            <div class="fc-definition" id="fcDefinition">When a thing is appropriate, it is right or normal.</div>
+                            <div class="fc-example" id="fcExample">"It's appropriate to wear a suit to the office."</div>
+                            <button class="btn btn-audio" onclick="event.stopPropagation(); speakExample()">🔊 Hear example</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+                    <button class="btn btn-secondary" onclick="prevCard()">⬅️ Prev</button>
+                    <span id="fcCounter" style="align-self:center; font-weight:700; color:#666;">1 / 20</span>
+                    <button class="btn btn-secondary" onclick="nextCard()">Next ➡️</button>
+                </div>
+                <br>
+                <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+            </div>
+
+            <!-- 2. Sentence Builder Screen -->
+            <div class="screen" id="sentenceScreen">
+                <h2 style="color:#333;">🧩 Sentence Builder</h2>
+                <p style="color:#666; margin-bottom:10px;">Build the sentence using the grammar schema!</p>
+                <div class="mistakes-counter" id="mistakesCounter">❌ Mistakes: 0 / 3</div>
+                
+                <div class="sentence-schema">
+                    <div class="schema-title">📐 Grammar Schema (Structure):</div>
+                    <div class="schema-legend">
+                        <div class="legend-item"><div class="legend-color" style="background:#2563eb;"></div>Subject (Noun/Pronoun)</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#dc2626;"></div>Verb (Action/State)</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#16a34a;"></div>Object / Complement</div>
+                        <div class="legend-item"><div class="legend-color" style="background:#ea580c;"></div>Adverb / Phrase</div>
+                    </div>
+                    <div class="schema-formula" id="schemaFormula"></div>
+                </div>
+
+                <div class="sentence-area" id="sentenceArea"></div>
+                <div class="word-bank" id="wordBank"></div>
+                
+                <div id="sbFeedback" class="feedback-msg"></div>
+                
+                <div style="margin-top:15px;">
+                    <button class="btn btn-secondary" onclick="resetSentence()">🔄 Reset</button>
+                    <button class="btn btn-primary" id="checkBtn" onclick="checkSentence()">✅ Check</button>
+                    <button class="btn btn-secondary" id="sbNextBtn" style="display:none;" onclick="nextSentence()">Next ➡️</button>
+                </div>
+                <br>
+                <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+            </div>
+
+            <!-- 3. Work on Errors Screen -->
+            <div class="screen" id="workOnErrorScreen">
+                <div class="result-emoji" style="font-size:3.5em;">📝</div>
+                <h2 style="color:#333;">Work on Errors</h2>
+                <p style="color:#666; margin-bottom:20px;">Let's review the sentences you found difficult!</p>
+                
+                <div id="errorList" style="text-align:left; max-height:400px; overflow-y:auto; padding:0 10px;"></div>
+                
+                <div style="margin-top:20px;">
+                    <button class="btn btn-warning" onclick="retryMistakes()">🔄 Retry These Sentences</button>
+                    <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+                </div>
+            </div>
+
+            <!-- 4. All Correct Screen -->
+            <div class="screen" id="allCorrectScreen">
+                <div class="result-emoji" style="font-size:4em;">🏆</div>
+                <h2 style="color:#333;">Perfect Score!</h2>
+                <p style="color:#666; margin:15px 0; font-size:1.1em;">You got all sentences right on the first or second try! Amazing grammar skills!</p>
+                <button class="btn btn-next-level" onclick="goToLevel3()">🚀 Continue to Level 3</button>
+                <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+            </div>
+
+            <!-- 5. Dialogue Screen -->
+            <div class="screen" id="dialogueScreen">
+                <h2 style="color:#333;">💬 Beach Adventure</h2>
+                <p style="color:#666; margin-bottom:15px;">You and Sveta are at the beach. Choose the right phrases!</p>
+                <div class="dialogue-box">
+                    <div class="speaker" id="dlgSpeaker">Sveta</div>
+                    <div class="dialogue-text" id="dlgText">Look! The ocean is so beautiful today!</div>
+                </div>
+                <div class="choices" id="dlgChoices"></div>
+                <div id="dlgFeedback" class="feedback-msg"></div>
+                <br>
+                <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+            </div>
+
+            <!-- 6. Dialogue Complete Screen -->
+            <div class="screen" id="dialogueCompleteScreen">
+                <div class="result-emoji" style="font-size:4em;">🎉</div>
+                <h2 style="color:#333;">Dialogue Complete!</h2>
+                <p style="color:#666; margin:15px 0; font-size:1.1em;">Amazing job! You used words from Unit 4 & 9 perfectly. You're ready for real conversations!</p>
+                <button class="btn btn-next-level" onclick="goToLevel3()">🚀 Continue to Level 3</button>
+                <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== NAVIGATION =====
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'flashcardsScreen') loadCard();
+            if(id === 'sentenceScreen') { isInRetryMode = false; startSentenceGame(); }
+            if(id === 'dialogueScreen') loadDialogue(0);
+        }
+
+        function goToLevel3() {
+            window.location.href = 'level3.html';
+        }
+
+        // ===== AUDIO =====
+        function speak(text, rate = 0.9) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = rate;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // ===== 1. FLASHCARDS =====
+        const flashcards = [
+            { unit: "UNIT 4", word: "appropriate", type: "adj.", phonetic: "[əˈproʊpriət]", trans: "подходящий, уместный", def: "When a thing is appropriate, it is right or normal.", ex: "It's appropriate to wear a suit to the office." },
+            { unit: "UNIT 4", word: "avoid", type: "v.", phonetic: "[əˈvɔɪd]", trans: "избегать", def: "To avoid something is to stay away from it.", ex: "Avoid the broken bottle on the floor." },
+            { unit: "UNIT 4", word: "behave", type: "v.", phonetic: "[bɪˈheɪv]", trans: "вести себя", def: "To behave is to act in a particular way, especially to be good.", ex: "She always behaves well when her father is around." },
+            { unit: "UNIT 4", word: "calm", type: "adj.", phonetic: "[kɑːm]", trans: "спокойный", def: "When someone is calm, they do not get excited or upset.", ex: "A nice warm bath makes me feel so calm." },
+            { unit: "UNIT 4", word: "concern", type: "n.", phonetic: "[kənˈsɜːrn]", trans: "беспокойство, тревога", def: "Concern is a feeling of worry.", ex: "I was filled with concern after reading the newspaper." },
+            { unit: "UNIT 4", word: "content", type: "adj.", phonetic: "[kənˈtent]", trans: "довольный, удовлетворённый", def: "To be content is to be happy and not want more.", ex: "The baby looked very content sitting on the floor." },
+            { unit: "UNIT 4", word: "expect", type: "v.", phonetic: "[ɪkˈspekt]", trans: "ожидать", def: "If you expect something to happen, you believe it will happen.", ex: "I expect the bus to be here very soon." },
+            { unit: "UNIT 4", word: "frequently", type: "adv.", phonetic: "[ˈfriːkwəntli]", trans: "часто", def: "When something happens frequently, it happens often.", ex: "We meet frequently, either at the beginning or ending of the week." },
+            { unit: "UNIT 4", word: "habit", type: "n.", phonetic: "[ˈhæbɪt]", trans: "привычка", def: "A habit is a thing that you do often.", ex: "Smoking is a bad habit that can kill you." },
+            { unit: "UNIT 4", word: "instruct", type: "v.", phonetic: "[ɪnˈstrʌkt]", trans: "обучать, инструктировать", def: "To instruct is to teach.", ex: "My teacher instructs us in several subjects." },
+            { unit: "UNIT 9", word: "perhaps", type: "adv.", phonetic: "[pərˈhæps]", trans: "возможно, может быть", def: "Perhaps is used when you say that something could happen.", ex: "Perhaps I will eat an apple for lunch." },
+            { unit: "UNIT 9", word: "pleasant", type: "adj.", phonetic: "[ˈpleznt]", trans: "приятный", def: "If something is pleasant, you enjoy it.", ex: "The character had a pleasant look on its face." },
+            { unit: "UNIT 9", word: "prevent", type: "v.", phonetic: "[prɪˈvent]", trans: "предотвращать", def: "To prevent something is to stop it from happening.", ex: "The handcuffs prevented me from moving my hands." },
+            { unit: "UNIT 9", word: "rock", type: "n.", phonetic: "[rɑːk]", trans: "камень, скала", def: "A rock is a hard thing in the dirt.", ex: "I stacked rocks on top of one another." },
+            { unit: "UNIT 9", word: "save", type: "v.", phonetic: "[seɪv]", trans: "спасать, сохранять", def: "To save something is to keep it from being hurt.", ex: "I want to help save the world." },
+            { unit: "UNIT 9", word: "step", type: "v.", phonetic: "[step]", trans: "шагать, ступать", def: "To step is to walk.", ex: "Be careful where you step." },
+            { unit: "UNIT 9", word: "still", type: "adv.", phonetic: "[stɪl]", trans: "всё ещё", def: "Still is used when you say that a situation keeps going on.", ex: "They are still waiting in line to get tickets." },
+            { unit: "UNIT 9", word: "taste", type: "n.", phonetic: "[teɪst]", trans: "вкус", def: "A taste is the flavor something makes in your mouth.", ex: "The taste of the fruit was sweet." },
+            { unit: "UNIT 9", word: "throw", type: "v.", phonetic: "[θroʊ]", trans: "бросать", def: "To throw something is to use your hand to make it go through the air.", ex: "The pitcher can throw the baseball very fast." },
+            { unit: "UNIT 9", word: "wave", type: "n.", phonetic: "[weɪv]", trans: "волна", def: "A wave is a line of water that moves higher than the rest of the water.", ex: "The water was filled with large blue waves." }
+        ];
+        let currentCard = 0;
+
+        function loadCard() {
+            document.getElementById('flashcard').classList.remove('flipped');
+            setTimeout(() => {
+                const card = flashcards[currentCard];
+                document.getElementById('fcUnit').textContent = card.unit;
+                document.getElementById('fcType').textContent = card.type;
+                document.getElementById('fcWord').textContent = card.word;
+                document.getElementById('fcPhonetic').textContent = card.phonetic;
+                document.getElementById('fcTranslation').textContent = card.trans;
+                document.getElementById('fcDefinition').textContent = card.def;
+                document.getElementById('fcExample').textContent = `"${card.ex}"`;
+                document.getElementById('fcCounter').textContent = `${currentCard + 1} / ${flashcards.length}`;
+            }, 200);
+        }
+        function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); }
+        function nextCard() { currentCard = (currentCard + 1) % flashcards.length; loadCard(); }
+        function prevCard() { currentCard = (currentCard - 1 + flashcards.length) % flashcards.length; loadCard(); }
+        function speakWord() { speak(flashcards[currentCard].word); }
+        function speakExample() { speak(flashcards[currentCard].ex); }
+
+        // ===== 2. SENTENCE BUILDER WITH MISTAKES TRACKING =====
+        const allSentences = [
+            {
+                text: "She always behaves well when her father is around .",
+                schema: '<span class="subj">Subject</span> + <span class="adv">Adverb of Frequency</span> + <span class="verb">Verb</span> + <span class="adv">Adverb of Manner</span> + <span class="adv">Time Clause</span>',
+                rule: "✅ Adverbs of manner (well, badly) usually come AFTER the verb. Adverbs of frequency (always) come BEFORE the main verb."
+            },
+            {
+                text: "I expect the bus to be here very soon .",
+                schema: '<span class="subj">Subject</span> + <span class="verb">Verb</span> + <span class="obj">Object</span> + <span class="adv">Infinitive Phrase</span>',
+                rule: "✅ Pattern: Verb + Object + to-infinitive. (expect + someone/something + to do something)."
+            },
+            {
+                text: "We meet frequently at the beginning of the week .",
+                schema: '<span class="subj">Subject</span> + <span class="verb">Verb</span> + <span class="adv">Adverb of Frequency</span> + <span class="adv">Prepositional Phrase (Time)</span>',
+                rule: "✅ Adverbs of frequency (frequently, often) come BEFORE the main verb. Time phrases go at the end."
+            },
+            {
+                text: "Smoking is a bad habit that can kill you .",
+                schema: '<span class="subj">Subject (Gerund)</span> + <span class="verb">Verb (to be)</span> + <span class="obj">Noun Phrase</span> + <span class="obj">Relative Clause</span>',
+                rule: "✅ Gerund (-ing) acts as a Noun Subject. Relative clause (that...) describes the noun before it."
+            },
+            {
+                text: "Perhaps I will eat an apple for lunch .",
+                schema: '<span class="adv">Adverb (Sentence modifier)</span> + <span class="subj">Subject</span> + <span class="verb">Verb (Future)</span> + <span class="obj">Object</span> + <span class="adv">Prepositional Phrase</span>',
+                rule: "✅ 'Perhaps' can go at the BEGINNING of a sentence to show uncertainty. Future Simple = will + Verb."
+            },
+            {
+                text: "The handcuffs prevented me from moving my hands .",
+                schema: '<span class="subj">Subject</span> + <span class="verb">Verb</span> + <span class="obj">Object</span> + <span class="adv">Prepositional Phrase (from + V-ing)</span>',
+                rule: "✅ Pattern: prevent + Object + from + Verb-ing. (Stop someone from doing something)."
+            },
+            {
+                text: "They are still waiting in line to get tickets .",
+                schema: '<span class="subj">Subject</span> + <span class="verb">Verb (Continuous)</span> + <span class="adv">Adverb</span> + <span class="adv">Place Phrase</span> + <span class="adv">Infinitive of Purpose</span>',
+                rule: "✅ 'Still' goes AFTER the auxiliary verb (are) and BEFORE the main verb (waiting). 'To get' shows purpose."
+            },
+            {
+                text: "The taste of the fruit was very sweet .",
+                schema: '<span class="subj">Subject (Noun Phrase)</span> + <span class="verb">Verb (to be)</span> + <span class="obj">Adjective (Subject Complement)</span>',
+                rule: "✅ After the verb 'to be', we use an Adjective to describe the Subject, not an Object."
+            }
+        ];
+
+        let sentencesToPractice = [];
+        let currentSentenceIndex = 0;
+        let mistakesCount = 0;
+        let errorSentences = [];
+        let isInRetryMode = false;
+        let builtSentence = [];
+        let answerRevealed = false;
+
+        function startSentenceGame() {
+            if (!isInRetryMode) {
+                sentencesToPractice = allSentences.map((s, i) => ({...s, originalIndex: i}));
+            }
+            currentSentenceIndex = 0;
+            mistakesCount = 0;
+            if (!isInRetryMode) errorSentences = [];
+            loadSentence();
+        }
+
+        function loadSentence() {
+            builtSentence = [];
+            answerRevealed = false;
+            document.getElementById('sbFeedback').className = 'feedback-msg';
+            document.getElementById('sbFeedback').style.display = 'none';
+            document.getElementById('sbNextBtn').style.display = 'none';
+            document.getElementById('checkBtn').style.display = 'inline-block';
+            document.getElementById('checkBtn').disabled = false;
+            updateMistakesCounter();
+            
+            const s = sentencesToPractice[currentSentenceIndex];
+            document.getElementById('schemaFormula').innerHTML = s.schema + '<br><br><strong>💡 Rule:</strong> ' + s.rule;
+            
+            const words = s.text.split(' ').sort(() => Math.random() - 0.5);
+            const bank = document.getElementById('wordBank');
+            const area = document.getElementById('sentenceArea');
+            bank.innerHTML = ''; area.innerHTML = '';
+
+            words.forEach((word, i) => {
+                const btn = document.createElement('div');
+                btn.className = 'word-block';
+                btn.textContent = word;
+                btn.dataset.word = word;
+                btn.dataset.id = i;
+                btn.onclick = () => addWord(word, btn, i);
+                bank.appendChild(btn);
+            });
+        }
+
+        function updateMistakesCounter() {
+            const counter = document.getElementById('mistakesCounter');
+            counter.textContent = `❌ Mistakes: ${mistakesCount} / 3`;
+            if (mistakesCount >= 2) {
+                counter.style.background = '#fecaca';
+                counter.style.color = '#991b1b';
+            } else {
+                counter.style.background = '#fee2e2';
+                counter.style.color = '#dc2626';
+            }
+        }
+
+        function addWord(word, btn, id) {
+            if (answerRevealed) return;
+            builtSentence.push({word, id});
+            btn.classList.add('used');
+            renderSentenceArea();
+        }
+
+        function renderSentenceArea() {
+            const area = document.getElementById('sentenceArea');
+            area.innerHTML = '';
+            builtSentence.forEach((item, idx) => {
+                const block = document.createElement('div');
+                block.className = 'word-block in-sentence';
+                block.textContent = item.word;
+                block.onclick = () => {
+                    if (answerRevealed) return;
+                    builtSentence.splice(idx, 1);
+                    document.querySelectorAll('#wordBank .word-block').forEach(b => {
+                        if (parseInt(b.dataset.id) === item.id) b.classList.remove('used');
+                    });
+                    renderSentenceArea();
+                };
+                area.appendChild(block);
+            });
+        }
+
+        function resetSentence() {
+            if (answerRevealed) return;
+            builtSentence = [];
+            document.querySelectorAll('#wordBank .word-block').forEach(b => b.classList.remove('used'));
+            renderSentenceArea();
+            document.getElementById('sbFeedback').style.display = 'none';
+        }
+
+        function checkSentence() {
+            const s = sentencesToPractice[currentSentenceIndex];
+            const target = s.text;
+            const current = builtSentence.map(b => b.word).join(' ');
+            const fb = document.getElementById('sbFeedback');
+            
+            if (current === target) {
+                fb.className = 'feedback-msg correct';
+                fb.innerHTML = '✅ Excellent! The sentence is correct!<br><br><strong>' + s.rule + '</strong>';
+                fb.style.display = 'block';
+                document.getElementById('checkBtn').style.display = 'none';
+                document.getElementById('sbNextBtn').style.display = 'inline-block';
+            } else {
+                mistakesCount++;
+                updateMistakesCounter();
+                
+                if (mistakesCount >= 3) {
+                    answerRevealed = true;
+                    fb.className = 'feedback-msg reveal';
+                    fb.innerHTML = `⚠️ <strong>3 mistakes — here's the correct answer:</strong><br><br>
+                        <div style="background:white; padding:12px; border-radius:8px; margin:10px 0; font-size:1.1em; color:#333; border-left:4px solid #f59e0b;">
+                        <strong>${target}</strong></div>
+                        <strong>${s.rule}</strong>`;
+                    fb.style.display = 'block';
+                    
+                    if (!isInRetryMode) {
+                        const origIdx = s.originalIndex;
+                        if (!errorSentences.includes(origIdx)) {
+                            errorSentences.push(origIdx);
+                        }
+                    }
+                    
+                    document.getElementById('checkBtn').style.display = 'none';
+                    document.getElementById('sbNextBtn').style.display = 'inline-block';
+                    document.querySelectorAll('.word-block').forEach(b => b.style.pointerEvents = 'none');
+                } else {
+                    fb.className = 'feedback-msg wrong';
+                    fb.textContent = `❌ Not quite right. Try again! (${3 - mistakesCount} attempt${3 - mistakesCount > 1 ? 's' : ''} left)`;
+                    fb.style.display = 'block';
+                    setTimeout(() => {
+                        if (!answerRevealed) resetSentence();
+                    }, 1500);
+                }
+            }
+        }
+
+        function nextSentence() {
+            currentSentenceIndex++;
+            mistakesCount = 0;
+            if (currentSentenceIndex < sentencesToPractice.length) {
+                loadSentence();
+            } else {
+                if (isInRetryMode) {
+                    showScreen('mainMenu');
+                } else if (errorSentences.length > 0) {
+                    showWorkOnError();
+                } else {
+                    showScreen('allCorrectScreen');
+                }
+            }
+        }
+
+        function showWorkOnError() {
+            const errorList = document.getElementById('errorList');
+            errorList.innerHTML = '';
+            
+            errorSentences.forEach(idx => {
+                const s = allSentences[idx];
+                const card = document.createElement('div');
+                card.className = 'error-card';
+                card.innerHTML = `
+                    <div class="label">❌ You struggled with this sentence:</div>
+                    <div class="correct-sentence">${s.text}</div>
+                    <div class="label-correct">📐 Grammar Rule:</div>
+                    <div class="rule">${s.rule}</div>
+                `;
+                errorList.appendChild(card);
+            });
+            
+            showScreen('workOnErrorScreen');
+        }
+
+        function retryMistakes() {
+            if (errorSentences.length === 0) {
+                showScreen('mainMenu');
+                return;
+            }
+            sentencesToPractice = errorSentences.map(i => ({...allSentences[i], originalIndex: i}));
+            currentSentenceIndex = 0;
+            mistakesCount = 0;
+            errorSentences = [];
+            isInRetryMode = true;
+            loadSentence();
+            showScreen('sentenceScreen');
+        }
+
+        // ===== 3. DIALOGUE =====
+        const dialogue = [
+            {
+                speaker: "Sveta",
+                text: "Look! The ocean is so beautiful today. Perhaps we should go for a walk on the beach!",
+                choices: [
+                    { text: "Maybe, I am not content.", next: 1, correct: false, feedback: "Say 'I'm not feeling well' or 'I'm tired'." },
+                    { text: "Yes, that sounds like a pleasant idea! Let's go.", next: 1, correct: true },
+                    { text: "No, I avoid beach.", next: 1, correct: false, feedback: "Grammar: 'I avoid the beach' or 'I don't like the beach'." }
+                ]
+            },
+            {
+                speaker: "Sveta",
+                text: "Oh no! Look at those large waves. We should be careful where we step — there are rocks on the sand.",
+                choices: [
+                    { text: "I will throw my shoes in ocean.", next: 2, correct: false, feedback: "That's not a good idea! Say you'll be careful." },
+                    { text: "I am still walking.", next: 2, correct: false, feedback: "Better say 'I'll watch my step'." },
+                    { text: "You're right. I don't want to damage my shoes.", next: 2, correct: true }
+                ]
+            },
+            {
+                speaker: "Local fisherman",
+                text: "Hello! Welcome to our island. This beach is my favorite place. Do you want to know a secret spot?",
+                choices: [
+                    { text: "No, we instruct you.", next: 3, correct: false, feedback: "'Instruct' means to teach — that doesn't fit here!" },
+                    { text: "Yes, please! We'd love to discover something new.", next: 3, correct: true },
+                    { text: "Tell us quick.", next: 3, correct: false, feedback: "Be polite! Say 'Yes, please' or 'That would be great'." }
+                ]
+            },
+            {
+                speaker: "Local fisherman",
+                text: "Frankly, there's a small cave behind those rocks. The taste of the fresh fish there is amazing!",
+                choices: [
+                    { text: "We prevent eating.", next: 4, correct: false, feedback: "'Prevent' means to stop something. Try again!" },
+                    { text: "I have concern about fish.", next: 4, correct: false, feedback: "Say 'I'm concerned about...' or 'I'm allergic to fish'." },
+                    { text: "That sounds wonderful! We frequently eat seafood.", next: 4, correct: true }
+                ]
+            },
+            {
+                speaker: "Sveta",
+                text: "Thank you so much for your hospitality! This has been a pleasant day. We should save this memory forever!",
+                choices: [
+                    { text: "Yes, bye.", next: 5, correct: false, feedback: "A bit short! Say something nicer." },
+                    { text: "Absolutely! I expect we'll come back here soon.", next: 5, correct: true }
+                ]
+            },
+            {
+                speaker: "System",
+                text: "🎉 Amazing job! You used words from Unit 4 & 9 perfectly. You're ready for real conversations!",
+                choices: []
+            }
+        ];
+
+        function loadDialogue(index) {
+            const scene = dialogue[index];
+            document.getElementById('dlgSpeaker').textContent = scene.speaker;
+            document.getElementById('dlgText').textContent = scene.text;
+            document.getElementById('dlgFeedback').className = 'feedback-msg';
+            document.getElementById('dlgFeedback').style.display = 'none';
+            
+            const choicesDiv = document.getElementById('dlgChoices');
+            choicesDiv.innerHTML = '';
+            
+            scene.choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice.text;
+                btn.onclick = () => {
+                    const fb = document.getElementById('dlgFeedback');
+                    if (choice.correct) {
+                        fb.className = 'feedback-msg correct';
+                        fb.textContent = '✅ Great choice!';
+                        fb.style.display = 'block';
+                        setTimeout(() => {
+                            if (choice.next >= dialogue.length) {
+                                showScreen('dialogueCompleteScreen');
+                            } else {
+                                loadDialogue(choice.next);
+                            }
+                        }, 1200);
+                    } else {
+                        fb.className = 'feedback-msg wrong';
+                        fb.textContent = `⚠️ ${choice.feedback}`;
+                        fb.style.display = 'block';
+                    }
+                };
+                choicesDiv.appendChild(btn);
+            });
+        }
+    </script>
+</body>
+</html>
