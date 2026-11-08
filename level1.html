@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1 — Placement Test | Paradise English</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .game-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { color: white; font-size: 2em; font-weight: 900; margin-bottom: 5px; }
+        .header .subtitle { color: rgba(255,255,255,0.95); font-size: 1.1em; font-weight: 600; }
+        .logo-container {
+            position: absolute;
+            top: -35px;
+            right: -35px;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .logo-container img { width: 100%; height: 100%; border-radius: 50%; object-fit: contain; }
+        
+        .progress-container { padding: 20px 30px 0; }
+        .progress-bar { background: #e9ecef; border-radius: 10px; height: 12px; overflow: hidden; }
+        .progress-fill {
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            height: 100%; border-radius: 10px; transition: width 0.5s ease;
+        }
+        .progress-text { text-align: center; margin-top: 8px; color: #666; font-weight: 700; font-size: 0.95em; }
+        
+        .content { padding: 30px; min-height: 450px; }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .welcome-screen h2 { color: #333; font-size: 1.8em; margin-bottom: 15px; }
+        .welcome-screen p { color: #666; font-size: 1.05em; line-height: 1.6; margin-bottom: 20px; }
+        .info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 16px; padding: 20px; margin: 20px 0; text-align: left;
+        }
+        .info-box h3 { color: #333; margin-bottom: 12px; text-align: center; font-size: 1.15em; }
+        .info-box ul { list-style: none; }
+        .info-box ul li { padding: 6px 0; color: #555; font-weight: 600; }
+        .info-box ul li::before { content: "✨ "; }
+        .goal-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 16px; padding: 18px; margin: 20px 0; border: 2px dashed #f5576c;
+        }
+        .goal-box h3 { color: #f5576c; font-size: 1.1em; margin-bottom: 8px; }
+        .goal-box p { color: #555; font-size: 0.95em; margin: 0; }
+        
+        .question-category {
+            display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.85em;
+            font-weight: 700; margin-bottom: 15px; text-transform: uppercase;
+        }
+        .question-text { font-size: 1.3em; color: #333; font-weight: 700; margin-bottom: 20px; line-height: 1.4; }
+        .definition-box {
+            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+            border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;
+            border: 2px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .definition-box .label { font-size: 0.8em; color: #667eea; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .definition-box .text { font-size: 1.05em; color: #333; font-weight: 600; font-style: italic; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .option-btn {
+            background: white; border: 2px solid #e9ecef; border-radius: 14px; padding: 15px 18px;
+            font-size: 1em; font-family: 'Nunito', sans-serif; font-weight: 600; color: #333;
+            cursor: pointer; transition: all 0.3s ease; text-align: left;
+        }
+        .option-btn:hover:not(:disabled) { border-color: #667eea; background: #f8f9ff; transform: translateX(5px); }
+        .option-btn.correct { border-color: #28a745; background: #d4edda; color: #155724; }
+        .option-btn.wrong { border-color: #dc3545; background: #f8d7da; color: #721c24; }
+        .option-btn:disabled { cursor: not-allowed; }
+        .option-letter {
+            display: inline-block; width: 28px; height: 28px; line-height: 28px; text-align: center;
+            background: #667eea; color: white; border-radius: 50%; margin-right: 10px; font-weight: 800; font-size: 0.85em;
+        }
+        
+        .feedback {
+            margin-top: 18px; padding: 14px 18px; border-radius: 12px; font-weight: 600;
+            display: none; animation: slideIn 0.3s ease; line-height: 1.5;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        
+        .btn {
+            border: none; border-radius: 14px; padding: 13px 28px; font-size: 1.05em;
+            font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; margin: 8px 5px; color: white; display: inline-block;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
+        .btn-secondary { background: #95a5a6; }
+        .btn-next { display: none; background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-next.visible { display: inline-block; }
+        
+        .result-emoji { font-size: 4em; margin-bottom: 12px; }
+        .result-title { font-size: 1.9em; font-weight: 900; color: #333; margin-bottom: 8px; }
+        .result-level {
+            font-size: 1.5em; font-weight: 900;
+            background: linear-gradient(135deg, #667eea, #f5576c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        .result-score { font-size: 1.25em; color: #666; margin-bottom: 18px; font-weight: 700; }
+        .result-details { background: #f8f9fa; border-radius: 16px; padding: 18px; margin: 18px 0; text-align: left; }
+        .result-details h3 { color: #333; margin-bottom: 12px; text-align: center; }
+        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e9ecef; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #666; font-weight: 600; }
+        .detail-value { font-weight: 800; color: #333; }
+        .travel-badge {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 16px; padding: 18px; margin: 18px 0; border: 3px solid #f5576c;
+        }
+        .travel-badge.ready { background: linear-gradient(135deg, #d4edda 0%, #a8e6cf 100%); border-color: #28a745; }
+        .travel-badge h3 { font-size: 1.2em; margin-bottom: 8px; }
+        .travel-badge p { color: #555; line-height: 1.5; font-size: 1em; }
+        
+        .score-display {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(255,255,255,0.25); backdrop-filter: blur(10px);
+            padding: 8px 14px; border-radius: 20px; color: white; font-weight: 700; font-size: 0.9em;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .logo-container { width: 80px; height: 80px; top: -25px; right: -25px; }
+            .content { padding: 20px; }
+            .question-text { font-size: 1.1em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="logo-container">
+            <img src="logo.png" alt="Paradise English" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2745%27 fill=%27%23f093fb%27/%3E%3Ctext x=%2750%27 y=%2760%27 font-size=%2740%27 text-anchor=%27middle%27 fill=%27white%27 font-weight=%27bold%27%3EPE%3C/text%3E%3C/svg%3E'">
+        </div>
+        
+        <div class="header">
+            <h1>🎮 Level 1: Placement Test</h1>
+            <p class="subtitle">Paradise English — Boracay</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Welcome!</div>
+        </div>
+        
+        <div class="content">
+            <!-- Welcome Screen -->
+            <div class="screen active" id="welcomeScreen">
+                <div class="welcome-screen">
+                    <h2>Hi, are you ready to travel with Sveta? 👋</h2>
+                    <p>Let's check your English level! Take this test of <strong>20 questions</strong> and find out if you're ready to travel with Sveta!</p>
+                    
+                    <div class="info-box">
+                        <h3>📋 What's in the test:</h3>
+                        <ul>
+                            <li>📖 Vocabulary — word meanings (5 questions)</li>
+                            <li>🔤 Word by Definition — guess the word (5 questions)</li>
+                            <li>📝 Sentence Understanding (5 questions)</li>
+                            <li>⏰ Past Simple vs Past Continuous (5 questions)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="goal-box">
+                        <h3>🎯 The Goal:</h3>
+                        <p>Score <strong>80% or more</strong> (16/20) and you'll be <strong>ready to travel with Sveta!</strong> ✈️🌴</p>
+                    </div>
+                    
+                    <p style="color: #999; font-size: 0.9em;">⏱ Estimated time: 7-10 minutes</p>
+                    <button class="btn btn-success" onclick="startTest()">🚀 Start the Test!</button>
+                </div>
+            </div>
+            
+            <!-- Question Screen -->
+            <div class="screen" id="questionScreen">
+                <div class="score-display" id="scoreDisplay">⭐ 0 / 0</div>
+                <div class="question-category" id="questionCategory">VOCABULARY</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="definition-box" id="definitionBox" style="display:none;">
+                    <div class="label">📖 Definition</div>
+                    <div class="text" id="definitionText"></div>
+                </div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+            </div>
+            
+            <!-- Result Screen -->
+            <div class="screen" id="resultScreen">
+                <div class="result-emoji" id="resultEmoji">🎉</div>
+                <div class="result-title" id="resultTitle">Test Complete!</div>
+                <div class="result-level" id="resultLevel">Your Score</div>
+                <div class="result-score" id="resultScore">0/20 (0%)</div>
+                
+                <div class="result-details">
+                    <h3>📊 Details:</h3>
+                    <div class="detail-row"><span class="detail-label">📖 Vocabulary</span><span class="detail-value" id="vocabScore">0/5</span></div>
+                    <div class="detail-row"><span class="detail-label">🔤 Word by Definition</span><span class="detail-value" id="defScore">0/5</span></div>
+                    <div class="detail-row"><span class="detail-label">📝 Sentences</span><span class="detail-value" id="sentenceScore">0/5</span></div>
+                    <div class="detail-row"><span class="detail-label">⏰ Grammar</span><span class="detail-value" id="grammarScore">0/5</span></div>
+                </div>
+                
+                <div class="travel-badge" id="travelBadge">
+                    <h3 id="travelTitle">🎒 Travel Status</h3>
+                    <p id="travelMessage"></p>
+                </div>
+                
+                <button class="btn btn-primary" onclick="goToLevel2()">🗺️ Continue to Level 2</button>
+                <button class="btn btn-secondary" onclick="backToMap()">🏠 Back to Map</button>
+                <button class="btn btn-danger" onclick="resetAndRetake()">🔄 Retake Test</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            { category: "VOCABULARY", type: "vocab", question: "What does the word «accommodation» mean?", options: ["A place to live or stay", "A type of transportation", "A kind of food", "A school subject"], correct: 0, explanation: "Accommodation = a place to live or stay (hotel, hostel, apartment, etc.)" },
+            { category: "VOCABULARY", type: "vocab", question: "What does the word «hospitality» mean?", options: ["A hospital building", "Friendly and generous reception of guests", "A type of hotel", "A medical treatment"], correct: 1, explanation: "Hospitality = friendly and generous reception of guests" },
+            { category: "VOCABULARY", type: "vocab", question: "What does the word «clarification» mean?", options: ["A type of classification", "The act of making something clear", "A declaration", "A cleaning process"], correct: 1, explanation: "Clarification = the act of making something clear or easier to understand" },
+            { category: "VOCABULARY", type: "vocab", question: "What does the word «unfurnished» mean?", options: ["Not decorated", "Without furniture", "Not finished", "Not found"], correct: 1, explanation: "Unfurnished = without furniture (furniture = tables, chairs, beds, etc.)" },
+            { category: "VOCABULARY", type: "vocab", question: "What does the word «spotless» mean?", options: ["Covered with spots", "Perfectly clean", "Full of points", "Spotty and dirty"], correct: 1, explanation: "Spotless = perfectly clean (spot + less = without spots)" },
+            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "A small one-storey house, often found in tropical places", options: ["villa", "bungalow", "hostel", "motel"], correct: 1, explanation: "Bungalow = a small one-storey house, common in tropical countries" },
+            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Very expensive and of high quality; luxurious", options: ["affordable", "rundown", "luxury", "cosy"], correct: 2, explanation: "Luxury = very expensive and of high quality" },
+            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Happening for only a limited period of time; not permanent", options: ["permanent", "gradually", "temporarily", "frequently"], correct: 2, explanation: "Temporarily = for a limited time only, not permanent" },
+            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Happening slowly, in small stages over time", options: ["suddenly", "gradually", "immediately", "frequently"], correct: 1, explanation: "Gradually = happening slowly, in small stages" },
+            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "In a good position; in a convenient place", options: ["well-located", "unfurnished", "rundown", "spacious"], correct: 0, explanation: "Well-located = in a good or convenient position" },
+            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The accommodation was affordable and well-located.»", options: ["The place to stay was cheap and in a good location", "The administration was accessible and well-placed", "The transport was free and centrally located", "The housing was expensive but central"], correct: 0, explanation: "Affordable = reasonably priced; well-located = in a good location" },
+            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «We need clarification on the unusual hospitality rules.»", options: ["We need to break the strange hotel rules", "We need an explanation of the strange guest-welcoming rules", "We need to classify the normal hospital rules", "We need to ignore the usual guest rules"], correct: 1, explanation: "Clarification = explanation; unusual = strange; hospitality = welcoming guests" },
+            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The spotless bungalow was temporarily unfurnished.»", options: ["The dirty bungalow was permanently furnished", "The perfectly clean bungalow had no furniture for a short time", "The clean hotel was temporarily closed", "The bungalow was messy and unfurnished"], correct: 1, explanation: "Spotless = perfectly clean; temporarily = for a short time; unfurnished = without furniture" },
+            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The gradually constructed villa had a unique landscape view.»", options: ["The slowly built villa had a one-of-a-kind view of nature", "The quickly built villa had a normal view", "The destroyed villa was in a unique landscape", "The villa was slowly destroyed by the landscape"], correct: 0, explanation: "Gradually = slowly; constructed = built; unique = one-of-a-kind; landscape = nature scenery" },
+            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «She made an appropriate decision to stay in the cosy hostel.»", options: ["She made a wrong decision to stay in a big hostel", "She made a suitable decision to stay in a comfortable, warm hostel", "She cancelled her decision to leave a cold hostel", "She decided to build a cosy hostel"], correct: 1, explanation: "Appropriate = suitable; cosy = comfortable and warm; hostel = budget accommodation" },
+            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «I ___ (walk) to school when it ___ (start) to rain.»", options: ["was walking / started", "walked / was starting", "was walking / was starting", "walked / started"], correct: 0, explanation: "Past Continuous (was walking) for a long action + Past Simple (started) for a short action that interrupted it" },
+            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «While she ___ (read) a book, the phone ___ (ring).»", options: ["read / was ringing", "was reading / rang", "was reading / was ringing", "read / rang"], correct: 1, explanation: "While + Past Continuous (was reading) = long action; Past Simple (rang) = short interrupting action" },
+            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «They ___ (watch) TV when the lights ___ (go) out.»", options: ["watched / went", "were watching / went", "were watching / were going", "watched / were going"], correct: 1, explanation: "Past Continuous (were watching) = action in progress; Past Simple (went) = sudden event" },
+            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «He ___ (cook) dinner while his wife ___ (take) a bath.»", options: ["cooked / took", "was cooking / was taking", "cooked / was taking", "was cooking / took"], correct: 1, explanation: "Two long actions happening at the same time → both in Past Continuous" },
+            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «I ___ (not / understand) the question because the teacher ___ (speak) too fast.»", options: ["didn't understand / was speaking", "wasn't understanding / spoke", "didn't understand / spoke", "wasn't understanding / was speaking"], correct: 0, explanation: "Understand is a state verb (no Continuous); speak is a long action → Past Continuous" }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        let vocabScore = 0, defScore = 0, sentenceScore = 0, grammarScore = 0;
+        let answered = false;
+        
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+        
+        function startTest() {
+            showScreen('questionScreen');
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            document.getElementById('questionCategory').textContent = q.category;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const defBox = document.getElementById('definitionBox');
+            if (q.type === 'definition') {
+                document.getElementById('definitionText').textContent = q.definition;
+                defBox.style.display = 'block';
+            } else {
+                defBox.style.display = 'none';
+            }
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<span class="option-letter">${letters[index]}</span>${option}`;
+                btn.onclick = () => selectAnswer(index, btn);
+                container.appendChild(btn);
+            });
+            
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').classList.remove('visible');
+            updateProgress();
+        }
+        
+        function selectAnswer(index, btn) {
+            if (answered) return;
+            answered = true;
+            const q = questions[currentQuestion];
+            const allBtns = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            allBtns.forEach(b => b.disabled = true);
+            
+            if (index === q.correct) {
+                btn.classList.add('correct');
+                score++;
+                if (q.type === 'vocab') vocabScore++;
+                if (q.type === 'definition') defScore++;
+                if (q.type === 'sentence') sentenceScore++;
+                if (q.type === 'grammar') grammarScore++;
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `✅ Correct! ${q.explanation}`;
+            } else {
+                btn.classList.add('wrong');
+                allBtns[q.correct].classList.add('correct');
+                feedback.className = 'feedback wrong';
+                feedback.innerHTML = `❌ Not quite. ${q.explanation}`;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('nextBtn').classList.add('visible');
+            updateScoreDisplay();
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+        
+        function updateProgress() {
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+        }
+        
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisplay').textContent = `⭐ ${score} / ${currentQuestion + 1}`;
+        }
+        
+        function showResults() {
+            showScreen('resultScreen');
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressText').textContent = 'Test Complete! 🎉';
+            
+            const total = questions.length;
+            const percentage = Math.round((score / total) * 100);
+            
+            // Сохраняем результат теста
+            localStorage.setItem('svetaQuestResult', JSON.stringify({ 
+                score, total, percentage, vocabScore, defScore, sentenceScore, grammarScore, 
+                date: new Date().toISOString() 
+            }));
+            
+            // Сохраняем прогресс для карты (разблокируем Level 2)
+            let unlockedLevels = [1];
+            if (percentage >= 80) {
+                unlockedLevels.push(2);
+            }
+            localStorage.setItem('svetaQuestProgress', JSON.stringify({ unlockedLevels }));
+            
+            document.getElementById('resultScore').textContent = `${score}/${total} (${percentage}%)`;
+            document.getElementById('vocabScore').textContent = `${vocabScore}/5`;
+            document.getElementById('defScore').textContent = `${defScore}/5`;
+            document.getElementById('sentenceScore').textContent = `${sentenceScore}/5`;
+            document.getElementById('grammarScore').textContent = `${grammarScore}/5`;
+            
+            const emoji = document.getElementById('resultEmoji');
+            const title = document.getElementById('resultTitle');
+            const level = document.getElementById('resultLevel');
+            const badge = document.getElementById('travelBadge');
+            const badgeTitle = document.getElementById('travelTitle');
+            const badgeMsg = document.getElementById('travelMessage');
+            
+            if (percentage >= 80) {
+                emoji.textContent = '✈️🌴';
+                title.textContent = 'Amazing Job!';
+                level.textContent = 'You\'re a Star!';
+                badge.className = 'travel-badge ready';
+                badgeTitle.textContent = '🎒 You\'re Ready to Travel with Sveta!';
+                badgeMsg.innerHTML = `Fantastic! You scored <strong>${percentage}%</strong>. Your English is strong enough to explore the world with Sveta! Level 2 is now unlocked! 🌍✨`;
+            } else if (percentage >= 60) {
+                emoji.textContent = '💪📚';
+                title.textContent = 'Good Effort!';
+                level.textContent = 'Almost There!';
+                badge.className = 'travel-badge';
+                badgeTitle.textContent = '🎒 Keep Practicing!';
+                badgeMsg.innerHTML = `You scored <strong>${percentage}%</strong>. You need a bit more practice before traveling with Sveta. Focus on your weak spots and try again! 💪`;
+            } else {
+                emoji.textContent = '🌱📖';
+                title.textContent = 'Keep Going!';
+                level.textContent = 'Learning Journey';
+                badge.className = 'travel-badge';
+                badgeTitle.textContent = '🎒 More Practice Needed';
+                badgeMsg.innerHTML = `You scored <strong>${percentage}%</strong>. Every expert was once a beginner! Let's work on the basics together. Don't give up! 🌟`;
+            }
+        }
+        
+        function goToLevel2() {
+            const savedResult = localStorage.getItem('svetaQuestResult');
+            if (savedResult) {
+                const result = JSON.parse(savedResult);
+                if (result.percentage >= 80) {
+                    window.location.href = 'level2.html';
+                } else {
+                    alert(`📚 Your score is ${result.percentage}%.\n\nYou need 80% or more to unlock Level 2! Please retake the test and do your best! 💪`);
+                }
+            }
+        }
+        
+        function backToMap() {
+            window.location.href = 'map.html';
+        }
+        
+        function resetAndRetake() {
+            if (confirm('⚠️ Are you sure? Your saved progress will be deleted!')) {
+                localStorage.removeItem('svetaQuestResult');
+                localStorage.removeItem('svetaQuestProgress');
+                currentQuestion = 0;
+                score = 0;
+                vocabScore = 0;
+                defScore = 0;
+                sentenceScore = 0;
+                grammarScore = 0;
+                document.getElementById('progressFill').style.width = '0%';
+                document.getElementById('progressText').textContent = 'Welcome!';
+                document.getElementById('scoreDisplay').textContent = '⭐ 0 / 0';
+                showScreen('welcomeScreen');
+            }
+        }
+    </script>
+</body>
+</html>
