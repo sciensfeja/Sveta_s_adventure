@@ -471,24 +471,25 @@
             }
         }
 
-       function goToNextPage() {
+      function goToNextPage() {
     const savedResult = localStorage.getItem('svetaQuestResult');
     
     if (savedResult) {
         const result = JSON.parse(savedResult);
         
-        // Для проверки: выведет твой текущий процент в консоль браузера (F12)
-        console.log("Твой текущий результат:", result.percentage + "%");
+        // Переводим в число и убираем знак %, если он там есть
+        const numericPercentage = parseInt(result.percentage, 10);
+        
+        // Для проверки в консоли F12
+        console.log("Очищенный результат для проверки:", numericPercentage);
 
-        if (result.percentage >= 80) {
-            // Переход на Level 2
-            window.location.href = 'level2.html'; 
+        if (numericPercentage >= 80) {
+            // Переход на Level 2 (добавили ./ для точности пути)
+            window.location.href = './level2.html'; 
         } else {
-            // Если меньше 80%, показываем сообщение и говорим, сколько не хватило
-            alert(`📚 Твой результат: ${result.percentage}%. \n\nТебе нужно 80% или больше, чтобы разблокировать Level 2! Пожалуйста, пройди тест еще раз и постарайся на максимум! 💪`);
+            alert(`📚 Твой результат: ${result.percentage}. \n\nТебе нужно 80% или больше, чтобы разблокировать Level 2! Пожалуйста, пройди тест еще раз и постарайся на максимум! 💪`);
         }
     } else {
-        // Если результат вдруг не сохранен
         alert('⚠️ Результат теста не найден. Пожалуйста, пройди тест в Level 1 сначала!');
     }
 }
