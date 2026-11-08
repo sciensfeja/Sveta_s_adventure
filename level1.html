@@ -127,6 +127,7 @@
         .btn-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
         .btn-secondary { background: #95a5a6; }
+        .btn-map { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .btn-next { display: none; background: linear-gradient(135deg, #667eea, #764ba2); }
         .btn-next.visible { display: inline-block; }
         
@@ -209,6 +210,7 @@
                     
                     <p style="color: #999; font-size: 0.9em;">⏱ Estimated time: 7-10 minutes</p>
                     <button class="btn btn-success" onclick="startTest()">🚀 Start the Test!</button>
+                    <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
                 </div>
             </div>
             
@@ -224,6 +226,8 @@
                 <div class="options" id="optionsContainer"></div>
                 <div class="feedback" id="feedback"></div>
                 <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+                <br>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
             
             <!-- Result Screen -->
@@ -247,7 +251,7 @@
                 </div>
                 
                 <button class="btn btn-primary" onclick="goToLevel2()">🗺️ Continue to Level 2</button>
-                <button class="btn btn-secondary" onclick="backToMap()">🏠 Back to Map</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
                 <button class="btn btn-danger" onclick="resetAndRetake()">🔄 Retake Test</button>
             </div>
         </div>
@@ -381,13 +385,11 @@
             const total = questions.length;
             const percentage = Math.round((score / total) * 100);
             
-            // Сохраняем результат теста
             localStorage.setItem('svetaQuestResult', JSON.stringify({ 
                 score, total, percentage, vocabScore, defScore, sentenceScore, grammarScore, 
                 date: new Date().toISOString() 
             }));
             
-            // Сохраняем прогресс для карты (разблокируем Level 2)
             let unlockedLevels = [1];
             if (percentage >= 80) {
                 unlockedLevels.push(2);
