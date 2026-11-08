@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Quest — Sveta's Adventure</title>
+    <title>Paradise English — Boracay Island Adventure</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
 
@@ -11,499 +11,380 @@
 
         body {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+            padding: 10px;
+            overflow-x: hidden;
         }
 
         .game-container {
             background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 750px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            max-width: 1400px;
             width: 100%;
+            margin: 0 auto;
             overflow: hidden;
-            position: relative;
+        }
+
+        .logo-container {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 50%;
+            padding: 6px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            z-index: 1000;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(3deg); }
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: contain;
         }
 
         .header {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 30px;
+            padding: 30px 20px 20px;
             text-align: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 1.6em;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            color: rgba(255,255,255,0.95);
+            font-size: 0.95em;
+            font-weight: 700;
+        }
+
+        .map-screen {
             position: relative;
-        }
-        .header h1 { color: white; font-size: 2.2em; font-weight: 900; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
-        .header .subtitle { color: rgba(255,255,255,0.95); font-size: 1.15em; margin-top: 5px; font-weight: 600; }
-        .sveta-avatar {
-            width: 110px; height: 110px; border-radius: 50%;
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            margin: 15px auto 0; display: flex; align-items: center; justify-content: center;
-            font-size: 3.2em; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-
-        .progress-container { padding: 20px 30px 0; }
-        .progress-bar { background: #e9ecef; border-radius: 10px; height: 12px; overflow: hidden; }
-        .progress-fill {
-            background: linear-gradient(90deg, #f093fb, #f5576c);
-            height: 100%; border-radius: 10px; transition: width 0.5s ease; width: 0%;
-        }
-        .progress-text { text-align: center; margin-top: 8px; color: #666; font-weight: 700; font-size: 0.95em; }
-
-        .content { padding: 30px; min-height: 420px; }
-
-        /* Screens */
-        .screen { display: none; text-align: center; }
-        .screen.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .welcome-screen h2 { color: #333; font-size: 1.9em; margin-bottom: 15px; }
-        .welcome-screen p { color: #666; font-size: 1.1em; line-height: 1.6; margin-bottom: 20px; }
-
-        .info-box {
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
-            border-radius: 16px; padding: 22px; margin: 20px 0; text-align: left;
-        }
-        .info-box h3 { color: #333; margin-bottom: 12px; text-align: center; font-size: 1.2em; }
-        .info-box ul { list-style: none; }
-        .info-box ul li { padding: 6px 0; color: #555; font-weight: 600; }
-        .info-box ul li::before { content: "✨ "; }
-
-        .goal-box {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 16px; padding: 18px; margin: 20px 0; border: 2px dashed #f5576c;
-        }
-        .goal-box h3 { color: #f5576c; font-size: 1.15em; margin-bottom: 8px; }
-        .goal-box p { color: #555; font-size: 1em; margin: 0; }
-
-        .question-category {
-            display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.85em;
-            font-weight: 700; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px;
-        }
-        .question-text { font-size: 1.35em; color: #333; font-weight: 700; margin-bottom: 22px; line-height: 1.4; }
-        
-        .definition-box {
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            border-radius: 14px; padding: 18px 22px; margin-bottom: 20px;
-            border: 2px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .definition-box .label { font-size: 0.85em; color: #667eea; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
-        .definition-box .text { font-size: 1.1em; color: #333; font-weight: 600; font-style: italic; }
-
-        .options { display: flex; flex-direction: column; gap: 12px; }
-        .option-btn {
-            background: white; border: 2px solid #e9ecef; border-radius: 14px; padding: 16px 20px;
-            font-size: 1.05em; font-family: 'Nunito', sans-serif; font-weight: 600; color: #333;
-            cursor: pointer; transition: all 0.3s ease; text-align: left;
-        }
-        .option-btn:hover:not(:disabled) { border-color: #667eea; background: #f8f9ff; transform: translateX(5px); }
-        .option-btn.correct { border-color: #28a745; background: #d4edda; color: #155724; }
-        .option-btn.wrong { border-color: #dc3545; background: #f8d7da; color: #721c24; }
-        .option-btn:disabled { cursor: not-allowed; }
-        .option-letter {
-            display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center;
-            background: #667eea; color: white; border-radius: 50%; margin-right: 12px; font-weight: 800; font-size: 0.9em;
+            width: 100%;
+            height: 85vh;
+            background-image: url('boracay-map.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
         }
 
-        .feedback {
-            margin-top: 20px; padding: 15px 20px; border-radius: 12px; font-weight: 600;
-            display: none; animation: slideIn 0.3s ease; line-height: 1.5;
-        }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .feedback.correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-        .feedback.wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
-
-        .btn {
-            border: none; border-radius: 14px; padding: 14px 30px; font-size: 1.1em;
-            font-family: 'Nunito', sans-serif; font-weight: 700; cursor: pointer;
-            transition: all 0.3s ease; width: 100%; margin-top: 15px; color: white;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .btn-success { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .btn-danger { background: linear-gradient(135deg, #ff6b6b, #ee5a6f); }
-        .btn-next { display: none; background: linear-gradient(135deg, #667eea, #764ba2); }
-        .btn-next.visible { display: block; }
-
-        .result-emoji { font-size: 4.5em; margin-bottom: 15px; }
-        .result-title { font-size: 2em; font-weight: 900; color: #333; margin-bottom: 8px; }
-        .result-level {
-            font-size: 1.6em; font-weight: 900;
-            background: linear-gradient(135deg, #667eea, #f5576c);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; margin-bottom: 15px;
-        }
-        .result-score { font-size: 1.3em; color: #666; margin-bottom: 20px; font-weight: 700; }
-
-        .result-details { background: #f8f9fa; border-radius: 16px; padding: 20px; margin: 20px 0; text-align: left; }
-        .result-details h3 { color: #333; margin-bottom: 15px; text-align: center; }
-        .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e9ecef; }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { color: #666; font-weight: 600; }
-        .detail-value { font-weight: 800; color: #333; }
-
-        .travel-badge {
-            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-            border-radius: 16px; padding: 20px; margin: 20px 0; border: 3px solid #f5576c;
-        }
-        .travel-badge.ready { background: linear-gradient(135deg, #d4edda 0%, #a8e6cf 100%); border-color: #28a745; }
-        .travel-badge h3 { font-size: 1.3em; margin-bottom: 10px; }
-        .travel-badge p { color: #555; line-height: 1.6; font-size: 1.05em; }
-
-        .score-display {
-            position: absolute; top: 20px; right: 20px;
-            background: rgba(255,255,255,0.25); backdrop-filter: blur(10px);
-            padding: 8px 16px; border-radius: 20px; color: white; font-weight: 700; font-size: 0.95em;
+        .welcome-overlay {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            z-index: 10;
+            text-align: center;
+            max-width: 90%;
         }
 
-        @media (max-width: 600px) {
-            .header h1 { font-size: 1.6em; }
-            .question-text { font-size: 1.15em; }
-            .content { padding: 20px; }
-            .option-btn { padding: 14px 16px; font-size: 0.95em; }
-            .welcome-screen h2 { font-size: 1.5em; }
+        .welcome-overlay h2 {
+            color: #f5576c;
+            font-size: 1em;
+            font-weight: 900;
+            margin-bottom: 3px;
+        }
+
+        .welcome-overlay p {
+            color: #555;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+
+        .path-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .path-line {
+            fill: none;
+            stroke: #f5576c;
+            stroke-width: 4;
+            stroke-dasharray: 8, 6;
+            stroke-linecap: round;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            animation: dash 15s linear infinite;
+        }
+
+        @keyframes dash {
+            to { stroke-dashoffset: -150; }
+        }
+
+        .level-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 5;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .level-marker:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+            z-index: 10;
+        }
+
+        .marker-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.95em;
+            font-weight: 900;
+        }
+
+        .level-marker.locked .marker-circle {
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+            cursor: not-allowed;
+        }
+
+        .level-marker.completed .marker-circle {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+
+        .level-marker.station .marker-circle {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            width: 45px;
+            height: 45px;
+            font-size: 1.1em;
+        }
+
+        .level-marker.final .marker-circle {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            width: 50px;
+            height: 50px;
+            font-size: 1.3em;
+            border-width: 4px;
+        }
+
+        .marker-label {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.65em;
+            font-weight: 800;
+            color: #2c3e50;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            border: 2px solid #f093fb;
+        }
+
+        .level-marker.locked .marker-label { border-color: #95a5a6; color: #7f8c8d; }
+        .level-marker.completed .marker-label { border-color: #2ecc71; }
+        .level-marker.station .marker-label { border-color: #f39c12; background: #fff9e6; }
+        .level-marker.final .marker-label { border-color: #e74c3c; background: #ffe6e6; font-size: 0.75em; }
+
+        @media (max-width: 700px) {
+            .header h1 { font-size: 1.2em; }
+            .logo-container { width: 60px; height: 60px; top: 8px; right: 8px; }
+            .marker-circle { width: 30px; height: 30px; font-size: 0.8em; border-width: 2px; }
+            .marker-label { font-size: 0.55em; top: 38px; padding: 2px 6px; }
+            .welcome-overlay h2 { font-size: 0.8em; }
+            .welcome-overlay p { font-size: 0.65em; }
+            .map-screen { height: 75vh; }
+            .level-marker.station .marker-circle { width: 36px; height: 36px; }
+            .level-marker.final .marker-circle { width: 40px; height: 40px; }
         }
     </style>
 </head>
 <body>
     <div class="game-container">
+        <div class="logo-container">
+            <img src="logo.png" alt="Paradise English Boracay" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ccircle cx=%2750%27 cy=%2750%27 r=%2745%27 fill=%27%23f093fb%27/%3E%3Ctext x=%2750%27 y=%2760%27 font-size=%2740%27 text-anchor=%27middle%27 fill=%27white%27 font-weight=%27bold%27%3EPE%3C/text%3E%3C/svg%3E'">
+        </div>
+
         <div class="header">
-            <div class="score-display" id="scoreDisplay">⭐ 0 / 0</div>
-            <h1>🎮 English Quest</h1>
-            <p class="subtitle">Sveta's Adventure</p>
-            <div class="sveta-avatar">👩‍🏫</div>
+            <h1>🏝️ Paradise English</h1>
+            <p class="subtitle">Boracay Island Adventure</p>
         </div>
 
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">Welcome!</div>
-        </div>
-
-        <div class="content">
-            <!-- 1. Welcome Screen -->
-            <div class="screen welcome-screen active" id="welcomeScreen">
-                <h2>Hi, are you ready to travel with Sveta? 👋</h2>
-                <p>Let's check your English level! Take a short test of <strong>20 questions</strong> and find out if you're ready to travel with Sveta!</p>
-
-                <div class="info-box">
-                    <h3>📋 What's in the test:</h3>
-                    <ul>
-                        <li>📖 Vocabulary — word meanings (5 questions)</li>
-                        <li>🔤 Word by Definition — guess the word (5 questions)</li>
-                        <li>📝 Sentence Understanding (5 questions)</li>
-                        <li>⏰ Past Simple vs Past Continuous (5 questions)</li>
-                    </ul>
-                </div>
-
-                <div class="goal-box">
-                    <h3>🎯 The Goal:</h3>
-                    <p>Score <strong>80% or more</strong> (16/20) and you'll be <strong>ready to travel with Sveta!</strong> ✈️🌴</p>
-                </div>
-
-                <p style="color: #999; font-size: 0.9em;">⏱ Estimated time: 7-10 minutes</p>
-                <button class="btn btn-success" onclick="startTest()">🚀 Start the Test!</button>
+        <div class="map-screen">
+            <div class="welcome-overlay">
+                <h2>🌴 Are you ready for an adventure with Sveta? 🌴</h2>
+                <p>Tap on a level marker to start your journey!</p>
             </div>
 
-            <!-- 2. Question Screen -->
-            <div class="screen" id="questionScreen">
-                <div class="question-category" id="questionCategory">VOCABULARY</div>
-                <div class="question-text" id="questionText"></div>
-                <div class="definition-box" id="definitionBox" style="display:none;">
-                    <div class="label">📖 Definition</div>
-                    <div class="text" id="definitionText"></div>
-                </div>
-                <div class="options" id="optionsContainer"></div>
-                <div class="feedback" id="feedback"></div>
-                <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+            <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <path class="path-line" d="M 10 15 L 20 25 L 30 20 L 40 30 L 50 25 L 60 35 L 70 30 L 80 40 L 85 50 L 75 55 L 65 60 L 55 65 L 45 70 L 35 75 L 25 70 L 20 60 L 25 50 L 35 45 L 45 50 L 55 45 L 65 50 L 75 45 L 85 55 L 90 65 L 80 75 L 90 85" />
+            </svg>
+
+            <div class="level-marker" id="level1" style="left: 10%; top: 15%;" onclick="window.location.href='level1.html'">
+                <div class="marker-circle">1</div>
+                <div class="marker-label">🎯 Placement Test</div>
             </div>
-
-            <!-- 3. Result Screen (First time) -->
-            <div class="screen" id="resultScreen">
-                <div class="result-emoji" id="resultEmoji">🎉</div>
-                <div class="result-title" id="resultTitle">Test Complete!</div>
-                <div class="result-level" id="resultLevel">Your Score</div>
-                <div class="result-score" id="resultScore">0/20 (0%)</div>
-
-                <div class="result-details">
-                    <h3>📊 Details:</h3>
-                    <div class="detail-row"><span class="detail-label">📖 Vocabulary</span><span class="detail-value" id="vocabScore">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">🔤 Word by Definition</span><span class="detail-value" id="defScore">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">📝 Sentences</span><span class="detail-value" id="sentenceScore">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">⏰ Grammar</span><span class="detail-value" id="grammarScore">0/5</span></div>
-                </div>
-
-                <div class="travel-badge" id="travelBadge">
-                    <h3 id="travelTitle">🎒 Travel Status</h3>
-                    <p id="travelMessage"></p>
-                </div>
-
-                <button class="btn btn-primary" onclick="goToNextPage()">🗺️ Continue to Level 2</button>
-                <button class="btn btn-danger" onclick="resetAndRetake()">🔄 Retake Test</button>
+            <div class="level-marker locked" id="level2" style="left: 20%; top: 25%;" onclick="window.location.href='level2.html'">
+                <div class="marker-circle">2</div>
+                <div class="marker-label">Vocab Unit 4</div>
             </div>
-
-            <!-- 4. Welcome Back Screen (Returning user) -->
-            <div class="screen" id="welcomeBackScreen">
-                <div class="result-emoji" id="wbEmoji">👋</div>
-                <div class="result-title">Welcome Back!</div>
-                <div class="result-level" id="wbLevel">Status</div>
-                <div class="result-score" id="wbScore">Your Last Score</div>
-
-                <div class="result-details">
-                    <h3>📊 Your Saved Progress:</h3>
-                    <div class="detail-row"><span class="detail-label">📖 Vocabulary</span><span class="detail-value" id="wbVocab">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">🔤 Word by Definition</span><span class="detail-value" id="wbDef">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">📝 Sentences</span><span class="detail-value" id="wbSentence">0/5</span></div>
-                    <div class="detail-row"><span class="detail-label">⏰ Grammar</span><span class="detail-value" id="wbGrammar">0/5</span></div>
-                    <div class="detail-row" style="margin-top: 10px; padding-top: 10px; border-top: 2px solid #ddd;">
-                        <span class="detail-label">📅 Completed on</span><span class="detail-value" id="wbDate">-</span>
-                    </div>
-                </div>
-
-                <div class="travel-badge" id="wbBadge">
-                    <h3 id="wbTravelTitle">Status</h3>
-                    <p id="wbTravelMessage">Message</p>
-                </div>
-
-                <button class="btn btn-primary" onclick="goToNextPage()">🗺️ Continue to Level 2</button>
-                <button class="btn btn-danger" onclick="resetAndRetake()">🔄 Reset & Retake Test</button>
+            <div class="level-marker locked" id="level3" style="left: 30%; top: 20%;" onclick="window.location.href='level3.html'">
+                <div class="marker-circle">3</div>
+                <div class="marker-label">Grammar PS/PC</div>
+            </div>
+            <div class="level-marker locked" id="level4" style="left: 40%; top: 30%;" onclick="window.location.href='level4.html'">
+                <div class="marker-circle">4</div>
+                <div class="marker-label">Sentences</div>
+            </div>
+            <div class="level-marker station locked" id="station1" style="left: 50%; top: 25%;">
+                <div class="marker-circle">⭐</div>
+                <div class="marker-label">Station 1</div>
+            </div>
+            <div class="level-marker locked" id="level5" style="left: 60%; top: 35%;" onclick="window.location.href='level5.html'">
+                <div class="marker-circle">5</div>
+                <div class="marker-label">Vocab Unit 9</div>
+            </div>
+            <div class="level-marker locked" id="level6" style="left: 70%; top: 30%;" onclick="window.location.href='level6.html'">
+                <div class="marker-circle">6</div>
+                <div class="marker-label">Dialogue 1</div>
+            </div>
+            <div class="level-marker locked" id="level7" style="left: 80%; top: 40%;" onclick="window.location.href='level7.html'">
+                <div class="marker-circle">7</div>
+                <div class="marker-label">Listening</div>
+            </div>
+            <div class="level-marker locked" id="level8" style="left: 85%; top: 50%;" onclick="window.location.href='level8.html'">
+                <div class="marker-circle">8</div>
+                <div class="marker-label">Reading</div>
+            </div>
+            <div class="level-marker station locked" id="station2" style="left: 75%; top: 55%;">
+                <div class="marker-circle">⭐</div>
+                <div class="marker-label">Station 2</div>
+            </div>
+            <div class="level-marker locked" id="level9" style="left: 65%; top: 60%;" onclick="window.location.href='level9.html'">
+                <div class="marker-circle">9</div>
+                <div class="marker-label">Vocab Unit 10</div>
+            </div>
+            <div class="level-marker locked" id="level10" style="left: 55%; top: 65%;" onclick="window.location.href='level10.html'">
+                <div class="marker-circle">10</div>
+                <div class="marker-label">Future Tense</div>
+            </div>
+            <div class="level-marker locked" id="level11" style="left: 45%; top: 70%;" onclick="window.location.href='level11.html'">
+                <div class="marker-circle">11</div>
+                <div class="marker-label">Writing</div>
+            </div>
+            <div class="level-marker locked" id="level12" style="left: 35%; top: 75%;" onclick="window.location.href='level12.html'">
+                <div class="marker-circle">12</div>
+                <div class="marker-label">Speaking</div>
+            </div>
+            <div class="level-marker station locked" id="station3" style="left: 25%; top: 70%;">
+                <div class="marker-circle">⭐</div>
+                <div class="marker-label">Station 3</div>
+            </div>
+            <div class="level-marker locked" id="level13" style="left: 20%; top: 60%;" onclick="window.location.href='level13.html'">
+                <div class="marker-circle">13</div>
+                <div class="marker-label">Vocab Unit 11</div>
+            </div>
+            <div class="level-marker locked" id="level14" style="left: 25%; top: 50%;" onclick="window.location.href='level14.html'">
+                <div class="marker-circle">14</div>
+                <div class="marker-label">Idioms</div>
+            </div>
+            <div class="level-marker locked" id="level15" style="left: 35%; top: 45%;" onclick="window.location.href='level15.html'">
+                <div class="marker-circle">15</div>
+                <div class="marker-label">Phrasal Verbs</div>
+            </div>
+            <div class="level-marker locked" id="level16" style="left: 45%; top: 50%;" onclick="window.location.href='level16.html'">
+                <div class="marker-circle">16</div>
+                <div class="marker-label">Dialogue 2</div>
+            </div>
+            <div class="level-marker station locked" id="station4" style="left: 55%; top: 45%;">
+                <div class="marker-circle">⭐</div>
+                <div class="marker-label">Station 4</div>
+            </div>
+            <div class="level-marker locked" id="level17" style="left: 65%; top: 50%;" onclick="window.location.href='level17.html'">
+                <div class="marker-circle">17</div>
+                <div class="marker-label">Vocab Unit 12</div>
+            </div>
+            <div class="level-marker locked" id="level18" style="left: 75%; top: 45%;" onclick="window.location.href='level18.html'">
+                <div class="marker-circle">18</div>
+                <div class="marker-label">Complex Grammar</div>
+            </div>
+            <div class="level-marker locked" id="level19" style="left: 85%; top: 55%;" onclick="window.location.href='level19.html'">
+                <div class="marker-circle">19</div>
+                <div class="marker-label">Conversations</div>
+            </div>
+            <div class="level-marker locked" id="level20" style="left: 90%; top: 65%;" onclick="window.location.href='level20.html'">
+                <div class="marker-circle">20</div>
+                <div class="marker-label">Advanced</div>
+            </div>
+            <div class="level-marker station locked" id="station5" style="left: 80%; top: 75%;">
+                <div class="marker-circle">⭐</div>
+                <div class="marker-label">Station 5</div>
+            </div>
+            <div class="level-marker final locked" id="finalTest" style="left: 90%; top: 85%;">
+                <div class="marker-circle">🏆</div>
+                <div class="marker-label">Final Test</div>
             </div>
         </div>
     </div>
 
     <script>
-        // ===== QUESTIONS DATABASE =====
-        const questions = [
-            { category: "VOCABULARY", type: "vocab", question: "What does the word «accommodation» mean?", options: ["A place to live or stay", "A type of transportation", "A kind of food", "A school subject"], correct: 0, explanation: "Accommodation = a place to live or stay (hotel, hostel, apartment, etc.)" },
-            { category: "VOCABULARY", type: "vocab", question: "What does the word «hospitality» mean?", options: ["A hospital building", "Friendly and generous reception of guests", "A type of hotel", "A medical treatment"], correct: 1, explanation: "Hospitality = friendly and generous reception of guests" },
-            { category: "VOCABULARY", type: "vocab", question: "What does the word «clarification» mean?", options: ["A type of classification", "The act of making something clear", "A declaration", "A cleaning process"], correct: 1, explanation: "Clarification = the act of making something clear or easier to understand" },
-            { category: "VOCABULARY", type: "vocab", question: "What does the word «unfurnished» mean?", options: ["Not decorated", "Without furniture", "Not finished", "Not found"], correct: 1, explanation: "Unfurnished = without furniture (furniture = tables, chairs, beds, etc.)" },
-            { category: "VOCABULARY", type: "vocab", question: "What does the word «spotless» mean?", options: ["Covered with spots", "Perfectly clean", "Full of points", "Spotty and dirty"], correct: 1, explanation: "Spotless = perfectly clean (spot + less = without spots)" },
-            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "A small one-storey house, often found in tropical places", options: ["villa", "bungalow", "hostel", "motel"], correct: 1, explanation: "Bungalow = a small one-storey house, common in tropical countries" },
-            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Very expensive and of high quality; luxurious", options: ["affordable", "rundown", "luxury", "cosy"], correct: 2, explanation: "Luxury = very expensive and of high quality" },
-            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Happening for only a limited period of time; not permanent", options: ["permanent", "gradually", "temporarily", "frequently"], correct: 2, explanation: "Temporarily = for a limited time only, not permanent" },
-            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "Happening slowly, in small stages over time", options: ["suddenly", "gradually", "immediately", "frequently"], correct: 1, explanation: "Gradually = happening slowly, in small stages" },
-            { category: "WORD BY DEFINITION", type: "definition", question: "Which word matches this definition?", definition: "In a good position; in a convenient place", options: ["well-located", "unfurnished", "rundown", "spacious"], correct: 0, explanation: "Well-located = in a good or convenient position" },
-            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The accommodation was affordable and well-located.»", options: ["The place to stay was cheap and in a good location", "The administration was accessible and well-placed", "The transport was free and centrally located", "The housing was expensive but central"], correct: 0, explanation: "Affordable = reasonably priced; well-located = in a good location" },
-            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «We need clarification on the unusual hospitality rules.»", options: ["We need to break the strange hotel rules", "We need an explanation of the strange guest-welcoming rules", "We need to classify the normal hospital rules", "We need to ignore the usual guest rules"], correct: 1, explanation: "Clarification = explanation; unusual = strange; hospitality = welcoming guests" },
-            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The spotless bungalow was temporarily unfurnished.»", options: ["The dirty bungalow was permanently furnished", "The perfectly clean bungalow had no furniture for a short time", "The clean hotel was temporarily closed", "The bungalow was messy and unfurnished"], correct: 1, explanation: "Spotless = perfectly clean; temporarily = for a short time; unfurnished = without furniture" },
-            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «The gradually constructed villa had a unique landscape view.»", options: ["The slowly built villa had a one-of-a-kind view of nature", "The quickly built villa had a normal view", "The destroyed villa was in a unique landscape", "The villa was slowly destroyed by the landscape"], correct: 0, explanation: "Gradually = slowly; constructed = built; unique = one-of-a-kind; landscape = nature scenery" },
-            { category: "SENTENCE UNDERSTANDING", type: "sentence", question: "What does this sentence mean? «She made an appropriate decision to stay in the cosy hostel.»", options: ["She made a wrong decision to stay in a big hostel", "She made a suitable decision to stay in a comfortable, warm hostel", "She cancelled her decision to leave a cold hostel", "She decided to build a cosy hostel"], correct: 1, explanation: "Appropriate = suitable; cosy = comfortable and warm; hostel = budget accommodation" },
-            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «I ___ (walk) to school when it ___ (start) to rain.»", options: ["was walking / started", "walked / was starting", "was walking / was starting", "walked / started"], correct: 0, explanation: "Past Continuous (was walking) for a long action + Past Simple (started) for a short action that interrupted it" },
-            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «While she ___ (read) a book, the phone ___ (ring).»", options: ["read / was ringing", "was reading / rang", "was reading / was ringing", "read / rang"], correct: 1, explanation: "While + Past Continuous (was reading) = long action; Past Simple (rang) = short interrupting action" },
-            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «They ___ (watch) TV when the lights ___ (go) out.»", options: ["watched / went", "were watching / went", "were watching / were going", "watched / were going"], correct: 1, explanation: "Past Continuous (were watching) = action in progress; Past Simple (went) = sudden event" },
-            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «He ___ (cook) dinner while his wife ___ (take) a bath.»", options: ["cooked / took", "was cooking / was taking", "cooked / was taking", "was cooking / took"], correct: 1, explanation: "Two long actions happening at the same time → both in Past Continuous" },
-            { category: "GRAMMAR", type: "grammar", question: "Choose the correct form: «I ___ (not / understand) the question because the teacher ___ (speak) too fast.»", options: ["didn't understand / was speaking", "wasn't understanding / spoke", "didn't understand / spoke", "wasn't understanding / was speaking"], correct: 0, explanation: "Understand is a state verb (no Continuous); speak is a long action → Past Continuous" }
-        ];
-
-        // ===== GAME STATE =====
-        let currentQuestion = 0;
-        let score = 0;
-        let vocabScore = 0, defScore = 0, sentenceScore = 0, grammarScore = 0;
-        let answered = false;
-
-        // ===== CHECK ON LOAD =====
+        // Проверяем сохраненный прогресс при загрузке
         window.onload = function() {
-            const savedResult = localStorage.getItem('svetaQuestResult');
-            if (savedResult) {
-                const result = JSON.parse(savedResult);
-                showScreen('welcomeBackScreen');
-                renderWelcomeBack(result);
+            const savedProgress = localStorage.getItem('svetaQuestProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                const unlockedLevels = progress.unlockedLevels || [1];
+                
+                // Разблокируем пройденные уровни
+                for (let i = 1; i <= 20; i++) {
+                    const level = document.getElementById(`level${i}`);
+                    if (level && unlockedLevels.includes(i)) {
+                        level.classList.remove('locked');
+                        level.classList.add('completed');
+                    }
+                }
+                
+                // Разблокируем станции
+                for (let i = 1; i <= 5; i++) {
+                    const station = document.getElementById(`station${i}`);
+                    const requiredLevel = i * 4;
+                    if (station && unlockedLevels.includes(requiredLevel)) {
+                        station.classList.remove('locked');
+                        station.classList.add('completed');
+                    }
+                }
+                
+                // Разблокируем финальный тест
+                const finalTest = document.getElementById('finalTest');
+                if (finalTest && unlockedLevels.includes(20)) {
+                    finalTest.classList.remove('locked');
+                    finalTest.classList.add('completed');
+                }
             }
         };
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-        }
-
-        function startTest() {
-            showScreen('questionScreen');
-            showQuestion();
-        }
-
-        function showQuestion() {
-            answered = false;
-            const q = questions[currentQuestion];
-            document.getElementById('questionCategory').textContent = q.category;
-            document.getElementById('questionText').textContent = q.question;
-
-            const defBox = document.getElementById('definitionBox');
-            if (q.type === 'definition') {
-                document.getElementById('definitionText').textContent = q.definition;
-                defBox.style.display = 'block';
-            } else {
-                defBox.style.display = 'none';
-            }
-
-            const container = document.getElementById('optionsContainer');
-            container.innerHTML = '';
-            const letters = ['A', 'B', 'C', 'D'];
-
-            q.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerHTML = `<span class="option-letter">${letters[index]}</span>${option}`;
-                btn.onclick = () => selectAnswer(index, btn);
-                container.appendChild(btn);
-            });
-
-            document.getElementById('feedback').className = 'feedback';
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('nextBtn').classList.remove('visible');
-            updateProgress();
-        }
-
-        function selectAnswer(index, btn) {
-            if (answered) return;
-            answered = true;
-            const q = questions[currentQuestion];
-            const allBtns = document.querySelectorAll('.option-btn');
-            const feedback = document.getElementById('feedback');
-
-            allBtns.forEach(b => b.disabled = true);
-
-            if (index === q.correct) {
-                btn.classList.add('correct');
-                score++;
-                if (q.type === 'vocab') vocabScore++;
-                if (q.type === 'definition') defScore++;
-                if (q.type === 'sentence') sentenceScore++;
-                if (q.type === 'grammar') grammarScore++;
-                feedback.className = 'feedback correct';
-                feedback.innerHTML = `✅ Correct! ${q.explanation}`;
-            } else {
-                btn.classList.add('wrong');
-                allBtns[q.correct].classList.add('correct');
-                feedback.className = 'feedback wrong';
-                feedback.innerHTML = `❌ Not quite. ${q.explanation}`;
-            }
-
-            feedback.style.display = 'block';
-            document.getElementById('nextBtn').classList.add('visible');
-            updateScoreDisplay();
-        }
-
-        function nextQuestion() {
-            currentQuestion++;
-            if (currentQuestion < questions.length) {
-                showQuestion();
-            } else {
-                showResults();
-            }
-        }
-
-        function updateProgress() {
-            const progress = (currentQuestion / questions.length) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
-        }
-
-        function updateScoreDisplay() {
-            document.getElementById('scoreDisplay').textContent = `⭐ ${score} / ${currentQuestion + 1}`;
-        }
-
-        function showResults() {
-            showScreen('resultScreen');
-            document.getElementById('progressFill').style.width = '100%';
-            document.getElementById('progressText').textContent = 'Test Complete! 🎉';
-
-            const total = questions.length;
-            const percentage = Math.round((score / total) * 100);
-
-            // SAVE TO LOCALSTORAGE
-            const resultData = { score, total, percentage, vocabScore, defScore, sentenceScore, grammarScore, date: new Date().toISOString() };
-            localStorage.setItem('svetaQuestResult', JSON.stringify(resultData));
-
-            document.getElementById('resultScore').textContent = `${score}/${total} (${percentage}%)`;
-            document.getElementById('vocabScore').textContent = `${vocabScore}/5`;
-            document.getElementById('defScore').textContent = `${defScore}/5`;
-            document.getElementById('sentenceScore').textContent = `${sentenceScore}/5`;
-            document.getElementById('grammarScore').textContent = `${grammarScore}/5`;
-
-            updateResultUI(percentage, 'resultEmoji', 'resultTitle', 'resultLevel', 'travelBadge', 'travelTitle', 'travelMessage');
-        }
-
-        function renderWelcomeBack(result) {
-            document.getElementById('wbScore').textContent = `Your Last Score: ${result.score}/${result.total} (${result.percentage}%)`;
-            document.getElementById('wbVocab').textContent = `${result.vocabScore}/5`;
-            document.getElementById('wbDef').textContent = `${result.defScore}/5`;
-            document.getElementById('wbSentence').textContent = `${result.sentenceScore}/5`;
-            document.getElementById('wbGrammar').textContent = `${result.grammarScore}/5`;
-            document.getElementById('wbDate').textContent = new Date(result.date).toLocaleDateString();
-
-            updateResultUI(result.percentage, 'wbEmoji', 'wbLevel', 'wbLevel', 'wbBadge', 'wbTravelTitle', 'wbTravelMessage');
-        }
-
-        function updateResultUI(percentage, emojiId, titleId, levelId, badgeId, badgeTitleId, badgeMsgId) {
-            const emoji = document.getElementById(emojiId);
-            const title = document.getElementById(titleId);
-            const level = document.getElementById(levelId);
-            const badge = document.getElementById(badgeId);
-            const badgeTitle = document.getElementById(badgeTitleId);
-            const badgeMsg = document.getElementById(badgeMsgId);
-
-            if (percentage >= 80) {
-                emoji.textContent = '✈️🌴';
-                title.textContent = 'Amazing Job!';
-                level.textContent = 'You\'re a Star!';
-                badge.className = 'travel-badge ready';
-                badgeTitle.textContent = '🎒 You\'re Ready to Travel with Sveta!';
-                badgeMsg.innerHTML = `Fantastic! You scored <strong>${percentage}%</strong>. Your English is strong enough to explore the world with Sveta! Pack your bags and let's go! 🌍✨`;
-            } else if (percentage >= 60) {
-                emoji.textContent = '💪📚';
-                title.textContent = 'Good Effort!';
-                level.textContent = 'Almost There!';
-                badge.className = 'travel-badge';
-                badgeTitle.textContent = '🎒 Keep Practicing!';
-                badgeMsg.innerHTML = `You scored <strong>${percentage}%</strong>. You need a bit more practice before traveling with Sveta. Focus on your weak spots and try again! 💪`;
-            } else {
-                emoji.textContent = '🌱📖';
-                title.textContent = 'Keep Going!';
-                level.textContent = 'Learning Journey';
-                badge.className = 'travel-badge';
-                badgeTitle.textContent = '🎒 More Practice Needed';
-                badgeMsg.innerHTML = `You scored <strong>${percentage}%</strong>. Every expert was once a beginner! Let's work on the basics together. Don't give up! 🌟`;
-            }
-        }
-
-      function goToNextPage() {
-    const savedResult = localStorage.getItem('svetaQuestResult');
-    
-    if (savedResult) {
-        const result = JSON.parse(savedResult);
-        
-        // Переводим в число и убираем знак %, если он там есть
-        const numericPercentage = parseInt(result.percentage, 10);
-        
-        // Для проверки в консоли F12
-        console.log("Очищенный результат для проверки:", numericPercentage);
-
-        if (numericPercentage >= 80) {
-            // Переход на Level 2 (добавили ./ для точности пути)
-            window.location.href = './level2.html'; 
-        } else {
-            alert(`📚 Твой результат: ${result.percentage}. \n\nТебе нужно 80% или больше, чтобы разблокировать Level 2! Пожалуйста, пройди тест еще раз и постарайся на максимум! 💪`);
-        }
-    } else {
-        alert('⚠️ Результат теста не найден. Пожалуйста, пройди тест в Level 1 сначала!');
-    }
-}
-
-        function resetAndRetake() {
-            if (confirm('⚠️ Are you sure? Your saved progress will be deleted!')) {
-                localStorage.removeItem('svetaQuestResult');
-                currentQuestion = 0; score = 0; vocabScore = 0; defScore = 0; sentenceScore = 0; grammarScore = 0;
-                document.getElementById('progressFill').style.width = '0%';
-                document.getElementById('progressText').textContent = 'Welcome!';
-                document.getElementById('scoreDisplay').textContent = '⭐ 0 / 0';
-                showScreen('welcomeScreen');
-            }
-        }
     </script>
 </body>
 </html>
