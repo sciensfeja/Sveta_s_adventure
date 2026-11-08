@@ -51,14 +51,13 @@
         .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
         .btn-primary { background: linear-gradient(135deg, #4facfe, #00f2fe); }
         .btn-secondary { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
-        .btn-back { background: #e9ecef; color: #333; }
+        .btn-back { background: #95a5a6; }
+        .btn-map { background: linear-gradient(135deg, #f39c12, #e67e22); }
         .btn-audio { background: linear-gradient(135deg, #f093fb, #f5576c); padding: 10px 20px; font-size: 0.95em; }
         .btn-warning { background: linear-gradient(135deg, #f59e0b, #ef4444); }
         .btn-next-level { 
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); 
-            padding: 16px 32px; 
-            font-size: 1.2em;
-            margin-top: 20px;
+            padding: 16px 32px; font-size: 1.2em; margin-top: 20px;
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
@@ -66,7 +65,6 @@
             50% { transform: scale(1.05); }
         }
 
-        /* Flashcards */
         .flashcard-scene { width: 100%; height: 420px; perspective: 1000px; margin: 20px 0; }
         .flashcard {
             width: 100%; height: 100%; position: relative; transition: transform 0.6s;
@@ -93,11 +91,9 @@
         .fc-type { font-size: 0.9em; background: rgba(255,255,255,0.3); padding: 4px 12px; border-radius: 12px; margin-bottom: 10px; }
         .fc-def-label { font-size: 0.8em; font-weight: 800; color: #155724; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
 
-        /* Sentence Builder */
         .sentence-schema {
             background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
-            border-radius: 16px; padding: 18px; margin-bottom: 20px;
-            border: 2px solid #ffc107; text-align: left;
+            border-radius: 16px; padding: 18px; margin-bottom: 20px; border: 2px solid #ffc107; text-align: left;
         }
         .schema-title { font-weight: 800; color: #856404; margin-bottom: 10px; font-size: 1.05em; }
         .schema-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
@@ -111,8 +107,7 @@
 
         .mistakes-counter {
             display: inline-block; background: #fee2e2; color: #dc2626;
-            padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9em;
-            margin-bottom: 15px;
+            padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.9em; margin-bottom: 15px;
         }
 
         .sentence-area {
@@ -129,7 +124,6 @@
         .word-block.used { opacity: 0.3; pointer-events: none; }
         .word-block.in-sentence { background: #4facfe; color: white; border-color: #4facfe; }
 
-        /* Dialogue */
         .dialogue-box {
             background: #f8f9fa; border-radius: 16px; padding: 25px; margin: 20px 0;
             text-align: left; border-left: 5px solid #43e97b;
@@ -151,11 +145,9 @@
 
         .unit-badge {
             display: inline-block; background: linear-gradient(135deg, #f093fb, #f5576c);
-            color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 700;
-            margin-bottom: 10px;
+            color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.85em; font-weight: 700; margin-bottom: 10px;
         }
 
-        /* Work on Errors Screen */
         .error-card {
             background: #fff5f5; border: 2px solid #feb2b2; border-radius: 14px;
             padding: 18px; margin-bottom: 15px; text-align: left;
@@ -196,6 +188,7 @@
             <div class="screen active" id="mainMenu">
                 <h2 style="color:#333; margin-bottom:10px;">Choose your activity!</h2>
                 <p style="color:#666;">Words from Unit 4 & Unit 9 📚</p>
+                
                 <div class="menu-grid">
                     <div class="menu-card" onclick="showScreen('flashcardsScreen')">
                         <div class="menu-icon">🃏</div>
@@ -210,6 +203,8 @@
                         <div class="menu-info"><h3>Beach Adventure</h3><p>A dialogue at the beach using your new words!</p></div>
                     </div>
                 </div>
+                
+                <button class="btn btn-map" onclick="backToMap()" style="margin-top:20px; width:100%;">🗺️ Back to Map</button>
             </div>
 
             <!-- 1. Flashcards Screen -->
@@ -241,7 +236,8 @@
                     <button class="btn btn-secondary" onclick="nextCard()">Next ➡️</button>
                 </div>
                 <br>
-                <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+                <button class="btn btn-secondary" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
 
             <!-- 2. Sentence Builder Screen -->
@@ -272,7 +268,8 @@
                     <button class="btn btn-secondary" id="sbNextBtn" style="display:none;" onclick="nextSentence()">Next ➡️</button>
                 </div>
                 <br>
-                <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+                <button class="btn btn-secondary" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
 
             <!-- 3. Work on Errors Screen -->
@@ -286,6 +283,7 @@
                 <div style="margin-top:20px;">
                     <button class="btn btn-warning" onclick="retryMistakes()">🔄 Retry These Sentences</button>
                     <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+                    <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
                 </div>
             </div>
 
@@ -296,6 +294,7 @@
                 <p style="color:#666; margin:15px 0; font-size:1.1em;">You got all sentences right on the first or second try! Amazing grammar skills!</p>
                 <button class="btn btn-next-level" onclick="goToLevel3()">🚀 Continue to Level 3</button>
                 <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
 
             <!-- 5. Dialogue Screen -->
@@ -310,6 +309,7 @@
                 <div id="dlgFeedback" class="feedback-msg"></div>
                 <br>
                 <button class="btn btn-back" onclick="showScreen('mainMenu')">⬅️ Back to Menu</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
 
             <!-- 6. Dialogue Complete Screen -->
@@ -319,6 +319,7 @@
                 <p style="color:#666; margin:15px 0; font-size:1.1em;">Amazing job! You used words from Unit 4 & 9 perfectly. You're ready for real conversations!</p>
                 <button class="btn btn-next-level" onclick="goToLevel3()">🚀 Continue to Level 3</button>
                 <button class="btn btn-secondary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+                <button class="btn btn-map" onclick="backToMap()">🗺️ Back to Map</button>
             </div>
         </div>
     </div>
@@ -334,7 +335,24 @@
         }
 
         function goToLevel3() {
+            const savedProgress = localStorage.getItem('svetaQuestProgress');
+            let unlockedLevels = [1];
+            
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                unlockedLevels = progress.unlockedLevels || [1];
+            }
+            
+            if (!unlockedLevels.includes(3)) {
+                unlockedLevels.push(3);
+            }
+            
+            localStorage.setItem('svetaQuestProgress', JSON.stringify({ unlockedLevels }));
             window.location.href = 'level3.html';
+        }
+
+        function backToMap() {
+            window.location.href = 'index.html';
         }
 
         // ===== AUDIO =====
@@ -393,7 +411,7 @@
         function speakWord() { speak(flashcards[currentCard].word); }
         function speakExample() { speak(flashcards[currentCard].ex); }
 
-        // ===== 2. SENTENCE BUILDER WITH MISTAKES TRACKING =====
+        // ===== 2. SENTENCE BUILDER =====
         const allSentences = [
             {
                 text: "She always behaves well when her father is around .",
