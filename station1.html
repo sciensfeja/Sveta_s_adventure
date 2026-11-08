@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Station 1 — Prepositions | Paradise English</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        .game-container {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .header h1 { color: white; font-size: 2em; font-weight: 900; margin-bottom: 5px; }
+        .header .subtitle { color: rgba(255,255,255,0.95); font-size: 1.1em; font-weight: 600; }
+        .star-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3em;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .content { padding: 30px; }
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .menu-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .menu-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+        }
+        .menu-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+        .menu-card h3 { font-size: 1.3em; margin-bottom: 8px; }
+        .menu-card p { font-size: 0.95em; opacity: 0.95; }
+        .menu-card .status {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.3);
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 700;
+        }
+        .menu-card .status.completed { background: #28a745; }
+        
+        .lesson-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+        }
+        .lesson-box h3 { color: #333; margin-bottom: 15px; font-size: 1.4em; }
+        .lesson-box p { color: #555; line-height: 1.6; margin-bottom: 10px; }
+        .example-box {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #fa709a;
+        }
+        .example-box code {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 5px;
+            color: #fa709a;
+            font-weight: 700;
+        }
+        
+        .pyramid-visual {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .pyramid-level {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+        }
+        .pyramid-in { background: #d4edda; color: #155724; }
+        .pyramid-on { background: #fff3cd; color: #856404; }
+        .pyramid-at { background: #d1ecf1; color: #0c5460; }
+        
+        .test-container {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        .question {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        /* Стили для слов с переводом */
+        .word-tooltip {
+            display: inline-block;
+            position: relative;
+            cursor: help;
+            border-bottom: 2px dotted #667eea;
+            transition: all 0.2s ease;
+        }
+        .word-tooltip:hover {
+            background: #e8f4f8;
+            border-radius: 4px;
+            padding: 2px 4px;
+        }
+        .word-tooltip .tooltip-text {
+            visibility: hidden;
+            opacity: 0;
+            width: max-content;
+            max-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: opacity 0.3s;
+            font-size: 0.9em;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+        .word-tooltip .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+        .word-tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .options { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 1em;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .option-btn:hover:not(:disabled) { border-color: #667eea; background: #f0f4ff; transform: translateX(5px); }
+        .option-btn.correct { border-color: #28a745; background: #d4edda; color: #155724; }
+        .option-btn.wrong { border-color: #dc3545; background: #f8d7da; color: #721c24; }
+        .option-btn:disabled { cursor: not-allowed; }
+        
+        .feedback {
+            margin-top: 15px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: none;
+        }
+        .feedback.correct { background: #d4edda; color: #155724; display: block; }
+        .feedback.wrong { background: #f8d7da; color: #721c24; display: block; }
+        
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 8px 5px;
+            color: white;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .btn-secondary { background: #95a5a6; }
+        .btn-success { background: linear-gradient(135deg, #28a745, #20c997); }
+        .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); }
+        /* ЯРКАЯ СИНЯЯ КНОПКА NEXT */
+        .btn-next { 
+            display: none; 
+            background: linear-gradient(135deg, #0066ff, #0099ff);
+            font-size: 1.1em;
+            padding: 16px 32px;
+            margin-top: 20px;
+            animation: pulseBtn 2s infinite;
+        }
+        @keyframes pulseBtn {
+            0%, 100% { box-shadow: 0 4px 12px rgba(0, 102, 255, 0.4); }
+            50% { box-shadow: 0 6px 20px rgba(0, 102, 255, 0.7); }
+        }
+        .btn-next.visible { display: inline-block; }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #fa709a, #fee140);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .score-display {
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #667eea;
+            margin: 15px 0;
+        }
+        
+        .result-box {
+            text-align: center;
+            padding: 30px;
+        }
+        .result-box .emoji { font-size: 4em; margin-bottom: 15px; }
+        .result-box h2 { color: #333; margin-bottom: 10px; font-size: 2em; }
+        .result-box .score { font-size: 2em; font-weight: 900; color: #667eea; margin: 20px 0; }
+        .result-box .message { font-size: 1.2em; color: #555; margin-bottom: 25px; }
+        
+        .hint-text {
+            text-align: center;
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+        
+        @media (max-width: 600px) {
+            .header h1 { font-size: 1.5em; }
+            .content { padding: 20px; }
+            .question { font-size: 1.1em; }
+            .btn-next { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <div class="star-badge">⭐</div>
+            <h1>🎯 Station 1: Prepositions</h1>
+            <p class="subtitle">Master English Prepositions!</p>
+        </div>
+
+        <div class="content">
+            <!-- Main Menu -->
+            <div class="screen active" id="mainMenu">
+                <h2 style="color:#333; margin-bottom:10px;">Choose Your Practice!</h2>
+                <p style="color:#666; margin-bottom:20px;">100 questions in each test • 20 random questions per session • 90% to pass</p>
+                
+                <div class="lesson-box">
+                    <h3>📚 Quick Guide: IN / ON / AT</h3>
+                    <div class="pyramid-visual">
+                        <div class="pyramid-at"><strong>AT</strong> — Point (at the station, at home)</div>
+                        <div class="pyramid-on"><strong>ON</strong> — Surface (on the table, on the wall)</div>
+                        <div class="pyramid-in"><strong>IN</strong> — 3D Space (in the box, in the room)</div>
+                    </div>
+                    <p><strong>IN</strong> = inside something (3D space)</p>
+                    <div class="example-box"><code>in</code> the room, <code>in</code> the box, <code>in</code> the car</div>
+                    <p><strong>ON</strong> = on the surface</p>
+                    <div class="example-box"><code>on</code> the table, <code>on</code> the wall, <code>on</code> the floor</div>
+                    <p><strong>AT</strong> = specific point or location</p>
+                    <div class="example-box"><code>at</code> the station, <code>at</code> home, <code>at</code> work</div>
+                </div>
+
+                <div class="menu-grid">
+                    <div class="menu-card" onclick="startTest(1)">
+                        <div class="status" id="status1"></div>
+                        <h3>📦 Test 1: IN / ON / AT</h3>
+                        <p>3D Space & Pyramid Practice</p>
+                    </div>
+                    <div class="menu-card" onclick="startTest(2)">
+                        <div class="status" id="status2"></div>
+                        <h3>🔗 Test 2: WITH / ABOUT / OF / FOR</h3>
+                        <p>Common Prepositions</p>
+                    </div>
+                    <div class="menu-card" onclick="startTest(3)">
+                        <div class="status" id="status3"></div>
+                        <h3>📍 Test 3: Position & Distance</h3>
+                        <p>Above, Below, Near, Far</p>
+                    </div>
+                    <div class="menu-card" onclick="startTest(4)">
+                        <div class="status" id="status4"></div>
+                        <h3>🎲 Test 4: Mixed Prepositions</h3>
+                        <p>Challenge All Types!</p>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="backToMap()" style="margin-top:20px; width:100%;">🗺️ Back to Map</button>
+            </div>
+
+            <!-- Test Screen -->
+            <div class="screen" id="testScreen">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+                </div>
+                <div class="score-display" id="scoreDisplay">Question 1 of 20</div>
+                <div class="test-container">
+                    <div class="question" id="questionText"></div>
+                    <div class="options" id="optionsContainer"></div>
+                    <div class="feedback" id="feedback"></div>
+                    <button class="btn btn-next" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+                </div>
+                <p class="hint-text">💡 Наведи курсор на слово, чтобы увидеть перевод</p>
+                <button class="btn btn-secondary" onclick="showScreen('mainMenu')" style="margin-top:15px;">⬅️ Back to Menu</button>
+            </div>
+
+            <!-- Result Screen -->
+            <div class="screen" id="resultScreen">
+                <div class="result-box">
+                    <div class="emoji" id="resultEmoji">🎉</div>
+                    <h2 id="resultTitle">Test Complete!</h2>
+                    <div class="score" id="finalScore">0 / 20 (0%)</div>
+                    <div class="message" id="resultMessage"></div>
+                    <button class="btn btn-primary" onclick="showScreen('mainMenu')">🏠 Back to Menu</button>
+                    <button class="btn btn-success" onclick="retryTest()">🔄 Try Again</button>
+                    <button class="btn btn-danger" onclick="resetProgress()">🗑️ Reset Progress</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== СЛОВАРЬ ПЕРЕВОДОВ =====
+        const translations = {
+            "the": "определенный артикль",
+            "book": "книга",
+            "is": "есть, является",
+            "on": "на (поверхности)",
+            "table": "стол",
+            "she": "она",
+            "in": "в, внутри",
+            "room": "комната",
+            "I'll": "я буду",
+            "meet": "встречаться",
+            "you": "ты, вы",
+            "at": "в, у, около",
+            "station": "станция",
+            "picture": "картина",
+            "wall": "стена",
+            "keys": "ключи",
+            "my": "мой, моя",
+            "bag": "сумка",
+            "he": "он",
+            "works": "работает",
+            "an": "неопределенный артикль",
+            "office": "офис",
+            "we": "мы",
+            "live": "живем",
+            "Boracay": "Боракай",
+            "Island": "остров",
+            "home": "дом",
+            "right": "сейчас, прямо",
+            "now": "сейчас",
+            "cat": "кот",
+            "sofa": "диван",
+            "waiting": "жду",
+            "bus": "автобус",
+            "stop": "остановка",
+            "milk": "молоко",
+            "fridge": "холодильник",
+            "there's": "там есть",
+            "spider": "паук",
+            "ceiling": "потолок",
+            "cinema": "кинотеатр",
+            "sitting": "сидит",
+            "chair": "стул",
+            "children": "дети",
+            "are": "являются",
+            "playing": "играют",
+            "garden": "сад",
+            "party": "вечеринка",
+            "pen": "ручка",
+            "desk": "письменный стол",
+            "school": "школа",
+            "fish": "рыба",
+            "water": "вода",
+            "notice": "объявление",
+            "door": "дверь",
+            "arrived": "прибыли",
+            "airport": "аэропорт",
+            "kitchen": "кухня",
+            "bird": "птица",
+            "tree": "дерево",
+            "work": "работа",
+            "sugar": "сахар",
+            "jar": "банка",
+            "stain": "пятно",
+            "shirt": "рубашка",
+            "corner": "угол",
+            "baby": "ребенок",
+            "crib": "кроватка",
+            "poster": "плакат",
+            "board": "доска",
+            "toys": "игрушки",
+            "box": "коробка",
+            "crack": "трещина",
+            "entrance": "вход",
+            "documents": "документы",
+            "folder": "папка",
+            "cup": "чашка",
+            "saucer": "блюдце",
+            "doctor's": "доктора",
+            "eggs": "яйца",
+            "carton": "картонная коробка",
+            "writing": "надпись",
+            "paper": "бумага",
+            "restaurant": "ресторан",
+            "clothes": "одежда",
+            "wardrobe": "шкаф",
+            "vase": "ваза",
+            "shelf": "полка",
+            "library": "библиотека",
+            "money": "деньги",
+            "wallet": "кошелек",
+            "logo": "логотип",
+            "concert": "концерт",
+            "shoes": "обувь",
+            "closet": "шкаф",
+            "painting": "картина",
+            "canvas": "холст",
+            "gym": "спортзал",
+            "files": "файлы",
+            "cabinet": "шкаф",
+            "label": "этикетка",
+            "bottle": "бутылка",
+            "conference": "конференция",
+            "jewelry": "украшения",
+            "safe": "сейф",
+            "stamp": "марка",
+            "envelope": "конверт",
+            "museum": "музей",
+            "wine": "вино",
+            "scratch": "царапина",
+            "car": "машина",
+            "gate": "ворота",
+            "tools": "инструменты",
+            "toolbox": "ящик для инструментов",
+            "signature": "подпись",
+            "pool": "бассейн",
+            "cookies": "печенье",
+            "hole": "дыра",
+            "sock": "носок",
+            "bridge": "мост",
+            "books": "книги",
+            "hospital": "больница",
+            "rice": "рис",
+            "bowl": "миска",
+            "wedding": "свадьба",
+            "letters": "письма",
+            "mailbox": "почтовый ящик",
+            "tattoo": "татуировка",
+            "arm": "рука",
+            "beach": "пляж",
+            "soup": "суп",
+            "pot": "кастрюля",
+            "reflection": "отражение",
+            "mirror": "зеркало",
+            "festival": "фестиваль",
+            "certificates": "сертификаты",
+            "frame": "рамка",
+            "dirt": "грязь",
+            "carpet": "ковер",
+            "ice": "лед",
+            "cream": "крем",
+            "cone": "рожок",
+            "fingerprint": "отпечаток пальца",
+            "glass": "стакан",
+            "vegetables": "овощи",
+            "basket": "корзина",
+            "paint": "краска",
+            "tea": "чай",
+            "shadow": "тень",
+            "ground": "земля",
+            "fountain": "фонтан",
+            "toy": "игрушка",
+            "dust": "пыль",
+            "cafe": "кафе",
+            "bread": "хлеб",
+            "oven": "духовка",
+            "mark": "отметка",
+            "meeting": "встреча",
+            "drawer": "ящик",
+            "sticker": "наклейка",
+            "laptop": "ноутбук",
+            "park": "парк",
+            "smudge": "размазня",
+            "screen": "экран",
+            "seminar": "семинар",
+            "ink": "чернила",
+            "store": "магазин",
+            "with": "с",
+            "about": "о, про",
+            "of": "из, о",
+            "for": "для",
+            "talking": "разговариваю",
+            "friend": "друг",
+            "this": "этот",
+            "animals": "животные",
+            "afraid": "боюсь",
+            "spiders": "пауки",
+            "gift": "подарок",
+            "good": "хороший",
+            "math": "математика",
+            "thinking": "думаю",
+            "vacation": "отпуск",
+            "made": "сделан",
+            "wood": "дерево (материал)",
+            "thank": "спасибо",
+            "your": "твой",
+            "help": "помощь",
+            "agree": "согласен",
+            "project": "проект",
+            "proud": "горжусь",
+            "son": "сын",
+            "letter": "письмо",
+            "pleased": "доволен",
+            "results": "результаты",
+            "worried": "волнуюсь",
+            "exam": "экзамен",
+            "tired": "устал",
+            "waiting": "жду",
+            "angry": "злой",
+            "boss": "начальник",
+            "excited": "взволнован",
+            "trip": "поездка",
+            "fond": "люблю",
+            "chocolate": "шоколад",
+            "mother": "мама",
+            "satisfied": "доволен",
+            "arguing": "спорим",
+            "money": "деньги",
+            "ashamed": "стыдно",
+            "behavior": "поведение",
+            "responsible": "ответственен",
+            "bored": "скучаю",
+            "movie": "фильм",
+            "curious": "любопытно",
+            "answer": "ответ",
+            "aware": "осведомлен",
+            "problem": "проблема",
+            "grateful": "благодарен",
+            "familiar": "знаком",
+            "place": "место",
+            "confused": "смущен",
+            "instructions": "инструкции",
+            "capable": "способен",
+            "doing": "делать",
+            "eligible": "имею право",
+            "scholarship": "стипендия",
+            "impressed": "впечатлен",
+            "her": "её",
+            "passionate": "увлечен",
+            "music": "музыка",
+            "suspicious": "подозреваю",
+            "motives": "мотивы",
+            "qualified": "квалифицирован",
+            "job": "работа",
+            "content": "доволен",
+            "life": "жизнь",
+            "enthusiastic": "в восторге",
+            "learning": "обучение",
+            "jealous": "завидую",
+            "success": "успех",
+            "famous": "известен",
+            "cooking": "готовка",
+            "disappointed": "разочарован",
+            "service": "сервис",
+            "anxious": "тревожусь",
+            "confident": "уверен",
+            "abilities": "способности",
+            "dish": "блюдо",
+            "outcome": "результат",
+            "situation": "ситуация",
+            "what": "что",
+            "did": "сделал",
+            "opportunity": "возможность",
+            "happy": "счастлив",
+            "decision": "решение",
+            "future": "будущее",
+            "weather": "погода",
+            "quality": "качество",
+            "moving": "переезд",
+            "abroad": "за границу",
+            "achievements": "достижения",
+            "team": "команда",
+            "routine": "рутина",
+            "how": "как",
+            "works": "работает",
+            "risks": "риски",
+            "prize": "приз",
+            "software": "программное обеспечение",
+            "rules": "правила",
+            "solving": "решение",
+            "position": "позиция",
+            "art": "искусство",
+            "deal": "сделка",
+            "error": "ошибка",
+            "progress": "прогресс",
+            "environment": "окружающая среда",
+            "mistake": "ошибка",
+            "chance": "шанс",
+            "health": "здоровье",
+            "complaining": "жалобы",
+            "train": "поезд",
+            "changing": "смена",
+            "jobs": "работы",
+            "country": "страна",
+            "game": "игра",
+            "mystery": "тайна",
+            "danger": "опасность",
+            "award": "награда",
+            "topic": "тема",
+            "schedule": "расписание",
+            "great": "великий",
+            "things": "вещи",
+            "role": "роль",
+            "talent": "талант",
+            "paintings": "картины",
+            "food": "еда",
+            "interview": "собеседование",
+            "winning": "победа",
+            "support": "поддержка",
+            "design": "дизайн",
+            "above": "выше",
+            "below": "ниже",
+            "near": "рядом",
+            "far": "далеко",
+            "from": "от",
+            "plane": "самолет",
+            "flying": "летит",
+            "clouds": "облака",
+            "swimming": "плавают",
+            "surface": "поверхность",
+            "shop": "магазин",
+            "house": "дом",
+            "mountains": "горы",
+            "city": "город",
+            "helicopter": "вертолет",
+            "building": "здание",
+            "roots": "корни",
+            "subway": "метро",
+            "street": "улица",
+            "park": "парк",
+            "village": "деревня",
+            "capital": "столица",
+            "chandelier": "люстра",
+            "cellar": "подвал",
+            "kitchen": "кухня",
+            "bus": "автобус",
+            "apartment": "квартира",
+            "desert": "пустыня",
+            "ocean": "океан",
+            "sun": "солнце",
+            "horizon": "горизонт",
+            "lamp": "лампа",
+            "bed": "кровать",
+            "pipes": "трубы",
+            "floor": "пол",
+            "forest": "лес",
+            "town": "город",
+            "fireplace": "камин",
+            "basement": "подвал",
+            "star": "звезда",
+            "planet": "планета",
+            "mantle": "каминная полка",
+            "soil": "почва",
+            "pharmacy": "аптека",
+            "cabin": "хижина",
+            "clock": "часы",
+            "tunnel": "туннель",
+            "mountain": "гора",
+            "market": "рынок",
+            "square": "площадь",
+            "lighthouse": "маяк",
+            "shore": "берег",
+            "balcony": "балкон",
+            "cave": "пещера",
+            "cliff": "скала",
+            "bench": "скамейка",
+            "satellite": "спутник",
+            "attic": "чердак",
+            "bedroom": "спальня",
+            "runs": "идет",
+            "bakery": "пекарня",
+            "oasis": "оазис",
+            "flag": "флаг",
+            "pole": "шест",
+            "bunker": "бункер",
+            "taxi": "такси",
+            "stand": "стоянка",
+            "iceberg": "айсберг",
+            "roof": "крыша",
+            "meteor": "метеор",
+            "atmosphere": "атмосфера",
+            "portrait": "портрет",
+            "walls": "стены",
+            "comet": "комета",
+            "solar": "солнечный",
+            "system": "система",
+            "hangs": "висит",
+            "foundation": "фундамент",
+            "structure": "структура",
+            "meteorite": "метеорит",
+            "Earth": "Земля",
+            "counter": "стойка",
+            "clinic": "клиника",
+            "asteroid": "астероид",
+            "sofa": "диван",
+            "bookstore": "книжный магазин",
+            "galaxy": "галактика",
+            "nightstand": "тумбочка",
+            "extend": "простираются",
+            "gas": "газ",
+            "highway": "шоссе",
+            "nebula": "туманность",
+            "dresser": "комод",
+            "goes": "идет",
+            "quasar": "квазар",
+            "universe": "вселенная",
+            "ATM": "банкомат",
+            "bank": "банк",
+            "pulsar": "пульсар",
+            "overlooks": "выходит на",
+            "hillside": "склон холма",
+            "black": "черный",
+            "hallway": "коридор",
+            "streets": "улицы",
+            "supernova": "сверхновая",
+            "flies": "развевается",
+            "hill": "холм",
+            "exoplanet": "экзопланета",
+            "interested": "заинтересован",
+            "learning": "обучение",
+            "English": "английский",
+            "good": "хороший",
+            "playing": "игра",
+            "piano": "пианино",
+            "arrived": "прибыли",
+            "married": "женат",
+            "teacher": "учитель",
+            "sleeping": "спит",
+            "under": "под",
+            "flying": "полеты",
+            "photo": "фото",
+            "family": "семья",
+            "looking": "смотрю",
+            "forward": "вперед",
+            "seeing": "увидеть",
+            "excellent": "отличный",
+            "languages": "языки",
+            "traveling": "путешествуем",
+            "train": "поезд",
+            "written": "написана",
+            "Shakespeare": "Шекспир",
+            "allergic": "аллергия",
+            "peanuts": "арахис",
+            "responsible": "ответственна",
+            "thinking": "думаю",
+            "famous": "известен",
+            "satisfied": "доволен",
+            "worried": "волнуется",
+            "proud": "горжусь",
+            "bored": "скучно",
+            "curious": "любопытно",
+            "aware": "осведомлен",
+            "grateful": "благодарен",
+            "familiar": "знаком",
+            "confused": "смущен",
+            "capable": "способен",
+            "eligible": "имею право",
+            "impressed": "впечатлен",
+            "passionate": "увлечен",
+            "suspicious": "подозрительный",
+            "qualified": "квалифицирован",
+            "content": "доволен",
+            "enthusiastic": "в восторге",
+            "jealous": "ревнив",
+            "disappointed": "разочарован",
+            "anxious": "тревожен",
+            "confident": "уверен",
+            "keys": "ключи",
+            "shelf": "полка",
+            "afraid": "боится",
+            "heights": "высота",
+            "picture": "картина",
+            "dog": "собака",
+            "weekend": "выходные",
+            "cooking": "готовка",
+            "plane": "самолет",
+            "Tolstoy": "Толстой",
+            "cats": "кошки",
+            "team": "команда",
+            "future": "будущее",
+            "music": "музыка",
+            "work": "работа",
+            "test": "тест",
+            "son": "сын",
+            "letter": "письмо",
+            "game": "игра",
+            "works": "работает",
+            "risks": "риски",
+            "opportunity": "возможность",
+            "software": "программное обеспечение",
+            "rules": "правила",
+            "solving": "решение",
+            "position": "позиция",
+            "job": "работа",
+            "project": "проект",
+            "talent": "талант",
+            "paintings": "картины",
+            "food": "еда",
+            "interview": "собеседование",
+            "winning": "победа",
+            "support": "поддержка"
+        };
+
+        // ===== QUESTION BANKS (100 questions each) =====
+        const questionBanks = {
+            1: [
+                { q: "The book is ___ the table.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She is ___ the room.", options: ["in", "on", "at"], correct: 0, explanation: "IN = 3D space" },
+                { q: "I'll meet you ___ the station.", options: ["in", "on", "at"], correct: 2, explanation: "AT = specific point" },
+                { q: "The picture is ___ the wall.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "The keys are ___ my bag.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "He works ___ an office.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside building" },
+                { q: "We live ___ Boracay Island.", options: ["in", "on", "at"], correct: 1, explanation: "ON = island surface" },
+                { q: "She's ___ home right now.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The cat is ___ the sofa.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "I'm waiting ___ the bus stop.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The milk is ___ the fridge.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a spider ___ the ceiling.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "Let's meet ___ the cinema.", options: ["in", "on", "at"], correct: 2, explanation: "AT = meeting point" },
+                { q: "She's sitting ___ the chair.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "The children are playing ___ the garden.", options: ["in", "on", "at"], correct: 0, explanation: "IN = enclosed space" },
+                { q: "I'll see you ___ the party.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The pen is ___ the desk.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ school now.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The fish is ___ the water.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a notice ___ the door.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "We arrived ___ the airport.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "She's ___ the kitchen.", options: ["in", "on", "at"], correct: 0, explanation: "IN = room" },
+                { q: "The bird is ___ the tree.", options: ["in", "on", "at"], correct: 1, explanation: "ON = branch surface" },
+                { q: "I'm ___ work.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The sugar is ___ the jar.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside container" },
+                { q: "There's a stain ___ your shirt.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "Let's meet ___ the corner.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The baby is ___ the crib.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The poster is ___ the board.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the bus stop.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The toys are ___ the box.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a crack ___ the wall.", options: ["in", "on", "at"], correct: 1, explanation: "IN = within surface" },
+                { q: "I'll wait ___ the entrance.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The documents are ___ the folder.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The cup is ___ the saucer.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the doctor's office.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The eggs are ___ the carton.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's writing ___ the paper.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "We'll meet ___ the restaurant.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The clothes are ___ the wardrobe.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The vase is ___ the shelf.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the library.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The money is ___ the wallet.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a logo ___ the bag.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "I'll see you ___ the concert.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The shoes are ___ the closet.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The painting is ___ the canvas.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the gym.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The files are ___ the cabinet.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a label ___ the bottle.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "We met ___ the conference.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The jewelry is ___ the safe.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The stamp is ___ the envelope.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the museum.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The wine is ___ the bottle.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a scratch ___ the car.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "I'll wait ___ the gate.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The tools are ___ the toolbox.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The signature is ___ the document.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the pool.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The cookies are ___ the jar.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a dent ___ the car.", options: ["in", "on", "at"], correct: 1, explanation: "IN = within surface" },
+                { q: "We'll meet ___ the bridge.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The books are ___ the shelf.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the hospital.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The rice is ___ the bowl.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a hole ___ the sock.", options: ["in", "on", "at"], correct: 1, explanation: "IN = within" },
+                { q: "I'll see you ___ the wedding.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The letters are ___ the mailbox.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The tattoo is ___ her arm.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the beach.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The soup is ___ the pot.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a reflection ___ the mirror.", options: ["in", "on", "at"], correct: 1, explanation: "IN = within surface" },
+                { q: "We met ___ the festival.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The certificates are ___ the frame.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The dirt is ___ the carpet.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the airport.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The ice cream is ___ the cone.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a fingerprint ___ the glass.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "I'll wait ___ the corner.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The vegetables are ___ the basket.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The paint is ___ the wall.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the office.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The tea is ___ the cup.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a shadow ___ the ground.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "We'll meet ___ the fountain.", options: ["in", "on", "at"], correct: 2, explanation: "AT = point" },
+                { q: "The toys are ___ the toy box.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The dust is ___ the table.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the cafe.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The bread is ___ the oven.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a mark ___ the paper.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "I'll see you ___ the meeting.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The clothes are ___ the drawer.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The sticker is ___ the laptop.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "He's ___ the park.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" },
+                { q: "The water is ___ the glass.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "There's a smudge ___ the screen.", options: ["in", "on", "at"], correct: 1, explanation: "ON = surface" },
+                { q: "We met ___ the seminar.", options: ["in", "on", "at"], correct: 2, explanation: "AT = event" },
+                { q: "The files are ___ the drawer.", options: ["in", "on", "at"], correct: 0, explanation: "IN = inside" },
+                { q: "The ink is ___ the pen.", options: ["in", "on", "at"], correct: 1, explanation: "IN = inside container" },
+                { q: "She's ___ the store.", options: ["in", "on", "at"], correct: 2, explanation: "AT = location" }
+            ],
+            2: [
+                { q: "I'm talking ___ my friend.", options: ["with", "about", "of", "for"], correct: 0, explanation: "WITH = together" },
+                { q: "This book is ___ animals.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ABOUT = subject" },
+                { q: "I'm afraid ___ spiders.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AFRAID OF" },
+                { q: "This gift is ___ you.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR = intended for" },
+                { q: "She's good ___ math.", options: ["with", "about", "of", "for"], correct: 0, explanation: "GOOD WITH" },
+                { q: "I'm thinking ___ my vacation.", options: ["with", "about", "of", "for"], correct: 1, explanation: "THINKING ABOUT" },
+                { q: "It's made ___ wood.", options: ["with", "about", "of", "for"], correct: 2, explanation: "MADE OF" },
+                { q: "Thank you ___ your help.", options: ["with", "about", "of", "for"], correct: 3, explanation: "THANK FOR" },
+                { q: "I agree ___ you.", options: ["with", "about", "of", "for"], correct: 0, explanation: "AGREE WITH" },
+                { q: "We're talking ___ the project.", options: ["with", "about", "of", "for"], correct: 1, explanation: "TALKING ABOUT" },
+                { q: "I'm proud ___ my son.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PROUD OF" },
+                { q: "This is ___ my mother.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR = intended for" },
+                { q: "I'm pleased ___ the results.", options: ["with", "about", "of", "for"], correct: 0, explanation: "PLEASED WITH" },
+                { q: "She's worried ___ the exam.", options: ["with", "about", "of", "for"], correct: 1, explanation: "WORRIED ABOUT" },
+                { q: "I'm tired ___ waiting.", options: ["with", "about", "of", "for"], correct: 2, explanation: "TIRED OF" },
+                { q: "I'm waiting ___ the bus.", options: ["with", "about", "of", "for"], correct: 3, explanation: "WAITING FOR" },
+                { q: "He's angry ___ his boss.", options: ["with", "about", "of", "for"], correct: 0, explanation: "ANGRY WITH" },
+                { q: "I'm excited ___ the trip.", options: ["with", "about", "of", "for"], correct: 1, explanation: "EXCITED ABOUT" },
+                { q: "I'm fond ___ chocolate.", options: ["with", "about", "of", "for"], correct: 2, explanation: "FOND OF" },
+                { q: "This letter is ___ you.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR = intended for" },
+                { q: "I'm satisfied ___ my work.", options: ["with", "about", "of", "for"], correct: 0, explanation: "SATISFIED WITH" },
+                { q: "They're arguing ___ money.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ARGUING ABOUT" },
+                { q: "I'm ashamed ___ my behavior.", options: ["with", "about", "of", "for"], correct: 2, explanation: "ASHAMED OF" },
+                { q: "I'm responsible ___ this.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm bored ___ this movie.", options: ["with", "about", "of", "for"], correct: 0, explanation: "BORED WITH" },
+                { q: "She's curious ___ the answer.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CURIOUS ABOUT" },
+                { q: "I'm aware ___ the problem.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AWARE OF" },
+                { q: "I'm grateful ___ your help.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm familiar ___ this place.", options: ["with", "about", "of", "for"], correct: 0, explanation: "FAMILIAR WITH" },
+                { q: "I'm confused ___ the instructions.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONFUSED ABOUT" },
+                { q: "I'm capable ___ doing this.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CAPABLE OF" },
+                { q: "I'm eligible ___ the scholarship.", options: ["with", "about", "of", "for"], correct: 3, explanation: "ELIGIBLE FOR" },
+                { q: "I'm impressed ___ her work.", options: ["with", "about", "of", "for"], correct: 0, explanation: "IMPRESSED WITH" },
+                { q: "I'm passionate ___ music.", options: ["with", "about", "of", "for"], correct: 1, explanation: "PASSIONATE ABOUT" },
+                { q: "I'm suspicious ___ his motives.", options: ["with", "about", "of", "for"], correct: 2, explanation: "SUSPICIOUS OF" },
+                { q: "I'm qualified ___ this job.", options: ["with", "about", "of", "for"], correct: 3, explanation: "QUALIFIED FOR" },
+                { q: "I'm content ___ my life.", options: ["with", "about", "of", "for"], correct: 0, explanation: "CONTENT WITH" },
+                { q: "I'm enthusiastic ___ learning.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ENTHUSIASTIC ABOUT" },
+                { q: "I'm jealous ___ her success.", options: ["with", "about", "of", "for"], correct: 2, explanation: "JEALOUS OF" },
+                { q: "I'm famous ___ my cooking.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm disappointed ___ the service.", options: ["with", "about", "of", "for"], correct: 0, explanation: "DISAPPOINTED WITH" },
+                { q: "I'm anxious ___ the results.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ANXIOUS ABOUT" },
+                { q: "I'm confident ___ my abilities.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CONFIDENT OF" },
+                { q: "I'm famous ___ this dish.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm pleased ___ the outcome.", options: ["with", "about", "of", "for"], correct: 0, explanation: "PLEASED WITH" },
+                { q: "I'm concerned ___ the situation.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONCERNED ABOUT" },
+                { q: "I'm ashamed ___ what I did.", options: ["with", "about", "of", "for"], correct: 2, explanation: "ASHAMED OF" },
+                { q: "I'm grateful ___ this opportunity.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm happy ___ my decision.", options: ["with", "about", "of", "for"], correct: 0, explanation: "HAPPY WITH" },
+                { q: "I'm worried ___ the future.", options: ["with", "about", "of", "for"], correct: 1, explanation: "WORRIED ABOUT" },
+                { q: "I'm tired ___ this weather.", options: ["with", "about", "of", "for"], correct: 2, explanation: "TIRED OF" },
+                { q: "I'm waiting ___ your answer.", options: ["with", "about", "of", "for"], correct: 3, explanation: "WAITING FOR" },
+                { q: "I'm satisfied ___ the quality.", options: ["with", "about", "of", "for"], correct: 0, explanation: "SATISFIED WITH" },
+                { q: "I'm thinking ___ moving abroad.", options: ["with", "about", "of", "for"], correct: 1, explanation: "THINKING ABOUT" },
+                { q: "I'm proud ___ my achievements.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PROUD OF" },
+                { q: "I'm responsible ___ the team.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm bored ___ this routine.", options: ["with", "about", "of", "for"], correct: 0, explanation: "BORED WITH" },
+                { q: "I'm curious ___ how it works.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CURIOUS ABOUT" },
+                { q: "I'm aware ___ the risks.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AWARE OF" },
+                { q: "I'm eligible ___ the prize.", options: ["with", "about", "of", "for"], correct: 3, explanation: "ELIGIBLE FOR" },
+                { q: "I'm familiar ___ this software.", options: ["with", "about", "of", "for"], correct: 0, explanation: "FAMILIAR WITH" },
+                { q: "I'm confused ___ the rules.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONFUSED ABOUT" },
+                { q: "I'm capable ___ solving this.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CAPABLE OF" },
+                { q: "I'm qualified ___ the position.", options: ["with", "about", "of", "for"], correct: 3, explanation: "QUALIFIED FOR" },
+                { q: "I'm content ___ my job.", options: ["with", "about", "of", "for"], correct: 0, explanation: "CONTENT WITH" },
+                { q: "I'm enthusiastic ___ the project.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ENTHUSIASTIC ABOUT" },
+                { q: "I'm jealous ___ his talent.", options: ["with", "about", "of", "for"], correct: 2, explanation: "JEALOUS OF" },
+                { q: "I'm famous ___ my paintings.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm disappointed ___ the food.", options: ["with", "about", "of", "for"], correct: 0, explanation: "DISAPPOINTED WITH" },
+                { q: "I'm anxious ___ the interview.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ANXIOUS ABOUT" },
+                { q: "I'm confident ___ winning.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CONFIDENT OF" },
+                { q: "I'm grateful ___ your support.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm impressed ___ the design.", options: ["with", "about", "of", "for"], correct: 0, explanation: "IMPRESSED WITH" },
+                { q: "I'm passionate ___ art.", options: ["with", "about", "of", "for"], correct: 1, explanation: "PASSIONATE ABOUT" },
+                { q: "I'm suspicious ___ the deal.", options: ["with", "about", "of", "for"], correct: 2, explanation: "SUSPICIOUS OF" },
+                { q: "I'm responsible ___ the error.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm pleased ___ the progress.", options: ["with", "about", "of", "for"], correct: 0, explanation: "PLEASED WITH" },
+                { q: "I'm concerned ___ the environment.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONCERNED ABOUT" },
+                { q: "I'm ashamed ___ my mistake.", options: ["with", "about", "of", "for"], correct: 2, explanation: "ASHAMED OF" },
+                { q: "I'm grateful ___ the chance.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm happy ___ the results.", options: ["with", "about", "of", "for"], correct: 0, explanation: "HAPPY WITH" },
+                { q: "I'm worried ___ my health.", options: ["with", "about", "of", "for"], correct: 1, explanation: "WORRIED ABOUT" },
+                { q: "I'm tired ___ complaining.", options: ["with", "about", "of", "for"], correct: 2, explanation: "TIRED OF" },
+                { q: "I'm waiting ___ the train.", options: ["with", "about", "of", "for"], correct: 3, explanation: "WAITING FOR" },
+                { q: "I'm satisfied ___ the answer.", options: ["with", "about", "of", "for"], correct: 0, explanation: "SATISFIED WITH" },
+                { q: "I'm thinking ___ changing jobs.", options: ["with", "about", "of", "for"], correct: 1, explanation: "THINKING ABOUT" },
+                { q: "I'm proud ___ my country.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PROUD OF" },
+                { q: "I'm responsible ___ the children.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm bored ___ this game.", options: ["with", "about", "of", "for"], correct: 0, explanation: "BORED WITH" },
+                { q: "I'm curious ___ the mystery.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CURIOUS ABOUT" },
+                { q: "I'm aware ___ the danger.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AWARE OF" },
+                { q: "I'm eligible ___ the award.", options: ["with", "about", "of", "for"], correct: 3, explanation: "ELIGIBLE FOR" },
+                { q: "I'm familiar ___ this topic.", options: ["with", "about", "of", "for"], correct: 0, explanation: "FAMILIAR WITH" },
+                { q: "I'm confused ___ the schedule.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONFUSED ABOUT" },
+                { q: "I'm capable ___ great things.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CAPABLE OF" },
+                { q: "I'm qualified ___ this role.", options: ["with", "about", "of", "for"], correct: 3, explanation: "QUALIFIED FOR" }
+            ],
+            3: [
+                { q: "The plane is flying ___ the clouds.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher than" },
+                { q: "The fish are swimming ___ the surface.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = lower than" },
+                { q: "The shop is ___ my house.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close to" },
+                { q: "The beach is ___ from here.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The bird is ___ the tree.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The basement is ___ the ground floor.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "Sit ___ me, please.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The mountains are ___ the city.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The helicopter is ___ the building.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The roots are ___ the ground.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The park is ___ the school.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The island is ___ the coast.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The chandelier is ___ the table.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The subway is ___ the street.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The cafe is ___ the office.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The village is ___ the capital.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The sun is ___ the horizon.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The cellar is ___ the house.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bus stop is ___ my apartment.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The desert is ___ the ocean.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The shelf is ___ the desk.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The foundation is ___ the building.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The library is ___ the university.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The moon is ___ the Earth.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The lamp is ___ the bed.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The pipes are ___ the floor.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The gym is ___ my home.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The forest is ___ the town.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The painting is ___ the fireplace.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The basement is ___ the kitchen.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The restaurant is ___ the hotel.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The star is ___ our planet.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The mirror is ___ the sink.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The roots grow ___ the soil.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The pharmacy is ___ the hospital.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The cabin is ___ the city.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The clock is ___ the door.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The tunnel is ___ the mountain.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The market is ___ the square.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The lighthouse is ___ the shore.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The balcony is ___ the garden.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The cave is ___ the cliff.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bench is ___ the fountain.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The satellite is ___ the Earth.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The attic is ___ the bedroom.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The subway runs ___ the city.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bakery is ___ the corner.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The oasis is ___ the desert.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The flag is ___ the pole.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The bunker is ___ the ground.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The taxi stand is ___ the airport.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The iceberg is ___ the shore.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The roof is ___ the house.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The roots are ___ the tree.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The parking lot is ___ the mall.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The meteor is ___ our atmosphere.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The portrait is ___ the mantle.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The foundation is ___ the walls.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bus station is ___ the center.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The comet is ___ our solar system.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The chandelier hangs ___ the table.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The cellar is ___ the kitchen.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The post office is ___ the bank.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The meteorite is ___ Earth.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The shelf is ___ the counter.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The pipes run ___ the house.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The clinic is ___ the school.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The asteroid is ___ our planet.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The painting hangs ___ the sofa.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The basement is ___ the living room.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bookstore is ___ the cafe.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The galaxy is ___ our solar system.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The lamp is ___ the nightstand.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The roots extend ___ the surface.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The gas station is ___ the highway.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The nebula is ___ our galaxy.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The mirror is ___ the dresser.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The tunnel goes ___ the mountain.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The pharmacy is ___ the clinic.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The quasar is ___ our universe.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The clock is ___ the fireplace.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The foundation lies ___ the structure.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The ATM is ___ the bank.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The pulsar is ___ our galaxy.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The balcony overlooks ___ the pool.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The cave is ___ the hillside.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bench is ___ the tree.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The black hole is ___ our solar system.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The attic is ___ the hallway.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The subway runs ___ the streets.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The bakery is ___ the market.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The supernova is ___ our galaxy.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" },
+                { q: "The flag flies ___ the building.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The bunker is ___ the hill.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The taxi stand is ___ the station.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The exoplanet is ___ our solar system.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM = distant" }
+            ],
+            4: [
+                { q: "I'm interested ___ learning English.", options: ["in", "on", "at", "with"], correct: 0, explanation: "INTERESTED IN" },
+                { q: "She's good ___ playing piano.", options: ["in", "on", "at", "with"], correct: 2, explanation: "GOOD AT" },
+                { q: "We arrived ___ the airport.", options: ["in", "on", "at", "to"], correct: 2, explanation: "ARRIVE AT" },
+                { q: "He's married ___ a teacher.", options: ["with", "to", "of", "for"], correct: 1, explanation: "MARRIED TO" },
+                { q: "I'm waiting ___ the bus.", options: ["in", "on", "at", "for"], correct: 3, explanation: "WAIT FOR" },
+                { q: "The cat is sleeping ___ the sofa.", options: ["in", "on", "at", "under"], correct: 1, explanation: "ON = surface" },
+                { q: "She's afraid ___ flying.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AFRAID OF" },
+                { q: "This is a photo ___ my family.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PHOTO OF" },
+                { q: "I'm looking forward ___ seeing you.", options: ["in", "on", "at", "to"], correct: 3, explanation: "LOOK FORWARD TO" },
+                { q: "She's excellent ___ languages.", options: ["in", "on", "at", "with"], correct: 2, explanation: "EXCELLENT AT" },
+                { q: "We're traveling ___ train.", options: ["in", "on", "at", "by"], correct: 3, explanation: "BY TRAIN" },
+                { q: "The book was written ___ Shakespeare.", options: ["with", "about", "of", "by"], correct: 3, explanation: "WRITTEN BY" },
+                { q: "I'm allergic ___ peanuts.", options: ["with", "about", "of", "to"], correct: 3, explanation: "ALLERGIC TO" },
+                { q: "She's responsible ___ the project.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm thinking ___ you.", options: ["with", "about", "of", "for"], correct: 1, explanation: "THINKING ABOUT" },
+                { q: "He's famous ___ his paintings.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm satisfied ___ the service.", options: ["with", "about", "of", "for"], correct: 0, explanation: "SATISFIED WITH" },
+                { q: "She's worried ___ the exam.", options: ["with", "about", "of", "for"], correct: 1, explanation: "WORRIED ABOUT" },
+                { q: "I'm proud ___ my achievements.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PROUD OF" },
+                { q: "This gift is ___ you.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR YOU" },
+                { q: "I'm bored ___ this movie.", options: ["with", "about", "of", "for"], correct: 0, explanation: "BORED WITH" },
+                { q: "I'm curious ___ the answer.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CURIOUS ABOUT" },
+                { q: "I'm aware ___ the problem.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AWARE OF" },
+                { q: "I'm grateful ___ your help.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm familiar ___ this place.", options: ["with", "about", "of", "for"], correct: 0, explanation: "FAMILIAR WITH" },
+                { q: "I'm confused ___ the instructions.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONFUSED ABOUT" },
+                { q: "I'm capable ___ doing this.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CAPABLE OF" },
+                { q: "I'm eligible ___ the scholarship.", options: ["with", "about", "of", "for"], correct: 3, explanation: "ELIGIBLE FOR" },
+                { q: "I'm impressed ___ her work.", options: ["with", "about", "of", "for"], correct: 0, explanation: "IMPRESSED WITH" },
+                { q: "I'm passionate ___ music.", options: ["with", "about", "of", "for"], correct: 1, explanation: "PASSIONATE ABOUT" },
+                { q: "I'm suspicious ___ his motives.", options: ["with", "about", "of", "for"], correct: 2, explanation: "SUSPICIOUS OF" },
+                { q: "I'm qualified ___ this job.", options: ["with", "about", "of", "for"], correct: 3, explanation: "QUALIFIED FOR" },
+                { q: "I'm content ___ my life.", options: ["with", "about", "of", "for"], correct: 0, explanation: "CONTENT WITH" },
+                { q: "I'm enthusiastic ___ learning.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ENTHUSIASTIC ABOUT" },
+                { q: "I'm jealous ___ her success.", options: ["with", "about", "of", "for"], correct: 2, explanation: "JEALOUS OF" },
+                { q: "I'm famous ___ my cooking.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm disappointed ___ the service.", options: ["with", "about", "of", "for"], correct: 0, explanation: "DISAPPOINTED WITH" },
+                { q: "I'm anxious ___ the results.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ANXIOUS ABOUT" },
+                { q: "I'm confident ___ my abilities.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CONFIDENT OF" },
+                { q: "I'm famous ___ this dish.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "The keys are ___ the table.", options: ["in", "on", "at", "under"], correct: 1, explanation: "ON = surface" },
+                { q: "She's ___ the room.", options: ["in", "on", "at", "under"], correct: 0, explanation: "IN = inside" },
+                { q: "I'll meet you ___ the station.", options: ["in", "on", "at", "under"], correct: 2, explanation: "AT = point" },
+                { q: "The cat is ___ the table.", options: ["in", "on", "at", "under"], correct: 3, explanation: "UNDER = below" },
+                { q: "I'm talking ___ my friend.", options: ["with", "about", "of", "for"], correct: 0, explanation: "TALKING WITH" },
+                { q: "This book is ___ animals.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ABOUT = subject" },
+                { q: "I'm afraid ___ spiders.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AFRAID OF" },
+                { q: "This gift is ___ you.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR YOU" },
+                { q: "The plane is ___ the clouds.", options: ["above", "below", "near", "far from"], correct: 0, explanation: "ABOVE = higher" },
+                { q: "The fish are ___ the surface.", options: ["above", "below", "near", "far from"], correct: 1, explanation: "BELOW = under" },
+                { q: "The shop is ___ my house.", options: ["above", "below", "near", "far from"], correct: 2, explanation: "NEAR = close" },
+                { q: "The beach is ___ from here.", options: ["above", "below", "near", "far from"], correct: 3, explanation: "FAR FROM" },
+                { q: "I'm interested ___ art.", options: ["in", "on", "at", "with"], correct: 0, explanation: "INTERESTED IN" },
+                { q: "She's good ___ math.", options: ["in", "on", "at", "with"], correct: 2, explanation: "GOOD AT" },
+                { q: "We arrived ___ the hotel.", options: ["in", "on", "at", "to"], correct: 2, explanation: "ARRIVE AT" },
+                { q: "He's married ___ a doctor.", options: ["with", "to", "of", "for"], correct: 1, explanation: "MARRIED TO" },
+                { q: "I'm waiting ___ you.", options: ["in", "on", "at", "for"], correct: 3, explanation: "WAIT FOR" },
+                { q: "The book is ___ the shelf.", options: ["in", "on", "at", "under"], correct: 1, explanation: "ON = surface" },
+                { q: "She's afraid ___ heights.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AFRAID OF" },
+                { q: "This is a picture ___ my dog.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PICTURE OF" },
+                { q: "I'm looking forward ___ the weekend.", options: ["in", "on", "at", "to"], correct: 3, explanation: "LOOK FORWARD TO" },
+                { q: "She's excellent ___ cooking.", options: ["in", "on", "at", "with"], correct: 2, explanation: "EXCELLENT AT" },
+                { q: "We're traveling ___ plane.", options: ["in", "on", "at", "by"], correct: 3, explanation: "BY PLANE" },
+                { q: "The book was written ___ Tolstoy.", options: ["with", "about", "of", "by"], correct: 3, explanation: "WRITTEN BY" },
+                { q: "I'm allergic ___ cats.", options: ["with", "about", "of", "to"], correct: 3, explanation: "ALLERGIC TO" },
+                { q: "She's responsible ___ the team.", options: ["with", "about", "of", "for"], correct: 3, explanation: "RESPONSIBLE FOR" },
+                { q: "I'm thinking ___ the future.", options: ["with", "about", "of", "for"], correct: 1, explanation: "THINKING ABOUT" },
+                { q: "He's famous ___ his music.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm satisfied ___ my work.", options: ["with", "about", "of", "for"], correct: 0, explanation: "SATISFIED WITH" },
+                { q: "She's worried ___ the test.", options: ["with", "about", "of", "for"], correct: 1, explanation: "WORRIED ABOUT" },
+                { q: "I'm proud ___ my son.", options: ["with", "about", "of", "for"], correct: 2, explanation: "PROUD OF" },
+                { q: "This letter is ___ you.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FOR YOU" },
+                { q: "I'm bored ___ this game.", options: ["with", "about", "of", "for"], correct: 0, explanation: "BORED WITH" },
+                { q: "I'm curious ___ how it works.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CURIOUS ABOUT" },
+                { q: "I'm aware ___ the risks.", options: ["with", "about", "of", "for"], correct: 2, explanation: "AWARE OF" },
+                { q: "I'm grateful ___ the opportunity.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" },
+                { q: "I'm familiar ___ this software.", options: ["with", "about", "of", "for"], correct: 0, explanation: "FAMILIAR WITH" },
+                { q: "I'm confused ___ the rules.", options: ["with", "about", "of", "for"], correct: 1, explanation: "CONFUSED ABOUT" },
+                { q: "I'm capable ___ solving this.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CAPABLE OF" },
+                { q: "I'm eligible ___ the prize.", options: ["with", "about", "of", "for"], correct: 3, explanation: "ELIGIBLE FOR" },
+                { q: "I'm impressed ___ the design.", options: ["with", "about", "of", "for"], correct: 0, explanation: "IMPRESSED WITH" },
+                { q: "I'm passionate ___ art.", options: ["with", "about", "of", "for"], correct: 1, explanation: "PASSIONATE ABOUT" },
+                { q: "I'm suspicious ___ the deal.", options: ["with", "about", "of", "for"], correct: 2, explanation: "SUSPICIOUS OF" },
+                { q: "I'm qualified ___ the position.", options: ["with", "about", "of", "for"], correct: 3, explanation: "QUALIFIED FOR" },
+                { q: "I'm content ___ my job.", options: ["with", "about", "of", "for"], correct: 0, explanation: "CONTENT WITH" },
+                { q: "I'm enthusiastic ___ the project.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ENTHUSIASTIC ABOUT" },
+                { q: "I'm jealous ___ his talent.", options: ["with", "about", "of", "for"], correct: 2, explanation: "JEALOUS OF" },
+                { q: "I'm famous ___ my paintings.", options: ["with", "about", "of", "for"], correct: 3, explanation: "FAMOUS FOR" },
+                { q: "I'm disappointed ___ the food.", options: ["with", "about", "of", "for"], correct: 0, explanation: "DISAPPOINTED WITH" },
+                { q: "I'm anxious ___ the interview.", options: ["with", "about", "of", "for"], correct: 1, explanation: "ANXIOUS ABOUT" },
+                { q: "I'm confident ___ winning.", options: ["with", "about", "of", "for"], correct: 2, explanation: "CONFIDENT OF" },
+                { q: "I'm grateful ___ your support.", options: ["with", "about", "of", "for"], correct: 3, explanation: "GRATEFUL FOR" }
+            ]
+        };
+
+        let currentTest = null;
+        let currentQuestions = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+        let currentTestNum = 0;
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            if (screenId === 'mainMenu') updateStatuses();
+        }
+
+        function updateStatuses() {
+            for (let i = 1; i <= 4; i++) {
+                const statusEl = document.getElementById(`status${i}`);
+                const saved = localStorage.getItem(`station1_test${i}`);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.passed) {
+                        statusEl.textContent = '✅ Passed';
+                        statusEl.className = 'status completed';
+                    } else {
+                        statusEl.textContent = `Best: ${data.bestScore}%`;
+                        statusEl.className = 'status';
+                    }
+                }
+            }
+        }
+
+        function startTest(testNum) {
+            currentTestNum = testNum;
+            const bank = questionBanks[testNum];
+            currentQuestions = [...bank].sort(() => Math.random() - 0.5).slice(0, 20);
+            currentQuestion = 0;
+            score = 0;
+            showScreen('testScreen');
+            showQuestion();
+        }
+
+        function wrapWordsWithTooltips(text) {
+            const words = text.split(/(\s+)/);
+            return words.map(word => {
+                const cleanWord = word.replace(/[.,!?;:'"()]/g, '').toLowerCase();
+                if (translations[cleanWord]) {
+                    return `<span class="word-tooltip">${word}<span class="tooltip-text">${translations[cleanWord]}</span></span>`;
+                }
+                return word;
+            }).join('');
+        }
+
+        function showQuestion() {
+            answered = false;
+            const q = currentQuestions[currentQuestion];
+            const questionWithTooltips = wrapWordsWithTooltips(q.q);
+            document.getElementById('questionText').innerHTML = `Q${currentQuestion + 1}: ${questionWithTooltips}`;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index, btn);
+                container.appendChild(btn);
+            });
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('nextBtn').classList.remove('visible');
+            updateProgress();
+        }
+
+        function selectAnswer(index, btn) {
+            if (answered) return;
+            answered = true;
+            
+            const q = currentQuestions[currentQuestion];
+            const allBtns = document.querySelectorAll('.option-btn');
+            const feedback = document.getElementById('feedback');
+            
+            allBtns.forEach(b => b.disabled = true);
+            
+            if (index === q.correct) {
+                btn.classList.add('correct');
+                score++;
+                feedback.className = 'feedback correct';
+                feedback.innerHTML = `✅ Correct! ${q.explanation}`;
+            } else {
+                btn.classList.add('wrong');
+                allBtns[q.correct].classList.add('correct');
+                feedback.className = 'feedback wrong';
+                feedback.innerHTML = `❌ Wrong. ${q.explanation}`;
+            }
+            
+            feedback.style.display = 'block';
+            document.getElementById('nextBtn').classList.add('visible');
+            updateScore();
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < currentQuestions.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / currentQuestions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('scoreDisplay').textContent = `Question ${currentQuestion + 1} of 20`;
+        }
+
+        function updateScore() {
+            document.getElementById('scoreDisplay').textContent = `Score: ${score} / ${currentQuestion + 1}`;
+        }
+
+        function showResults() {
+            showScreen('resultScreen');
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            document.getElementById('finalScore').textContent = `${score} / 20 (${percentage}%)`;
+            
+            const passed = percentage >= 90;
+            const emoji = document.getElementById('resultEmoji');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+            
+            const saved = localStorage.getItem(`station1_test${currentTestNum}`);
+            let bestScore = 0;
+            if (saved) {
+                const data = JSON.parse(saved);
+                bestScore = data.bestScore || 0;
+            }
+            
+            if (percentage > bestScore) {
+                bestScore = percentage;
+            }
+            
+            localStorage.setItem(`station1_test${currentTestNum}`, JSON.stringify({
+                bestScore: bestScore,
+                passed: passed,
+                lastScore: percentage,
+                date: new Date().toISOString()
+            }));
+            
+            if (passed) {
+                emoji.textContent = '🏆';
+                title.textContent = 'Station Passed!';
+                message.textContent = `🌟 Excellent! You scored ${percentage}%! Station 1 is now marked as completed on the map!`;
+            } else if (percentage >= 70) {
+                emoji.textContent = '👍';
+                title.textContent = 'Good Job!';
+                message.textContent = `You scored ${percentage}%. You need 90% to pass. Keep practicing!`;
+            } else {
+                emoji.textContent = '💪';
+                title.textContent = 'Keep Trying!';
+                message.textContent = `You scored ${percentage}%. You need 90% to pass. Review the lesson and try again!`;
+            }
+        }
+
+        function retryTest() {
+            startTest(currentTestNum);
+        }
+
+        function resetProgress() {
+            if (confirm('⚠️ Are you sure you want to reset all Station 1 progress?')) {
+                for (let i = 1; i <= 4; i++) {
+                    localStorage.removeItem(`station1_test${i}`);
+                }
+                showScreen('mainMenu');
+            }
+        }
+
+        function backToMap() {
+            const savedProgress = localStorage.getItem('svetaQuestProgress');
+            let progress = { unlockedLevels: [1], completedStations: [] };
+            
+            if (savedProgress) {
+                progress = JSON.parse(savedProgress);
+            }
+            
+            let allPassed = true;
+            for (let i = 1; i <= 4; i++) {
+                const saved = localStorage.getItem(`station1_test${i}`);
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data.passed) {
+                        if (!progress.completedStations) progress.completedStations = [];
+                        if (!progress.completedStations.includes('station1')) {
+                            progress.completedStations.push('station1');
+                        }
+                    } else {
+                        allPassed = false;
+                    }
+                } else {
+                    allPassed = false;
+                }
+            }
+            
+            localStorage.setItem('svetaQuestProgress', JSON.stringify(progress));
+            window.location.href = 'index.html';
+        }
+
+        updateStatuses();
+    </script>
+</body>
+</html>
