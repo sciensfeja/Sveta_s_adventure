@@ -320,33 +320,47 @@
         </div>
     </div>
     <script>
-        window.onload = function() {
-            const savedProgress = localStorage.getItem('svetaQuestProgress');
-            if (savedProgress) {
-                const progress = JSON.parse(savedProgress);
-                const unlockedLevels = progress.unlockedLevels || [1];
-                for (let i = 1; i <= 20; i++) {
-                    const level = document.getElementById(`level${i}`);
-                    if (level && unlockedLevels.includes(i)) {
-                        level.classList.remove('locked');
-                        level.classList.add('completed');
-                    }
-                }
-                for (let i = 1; i <= 5; i++) {
-                    const station = document.getElementById(`station${i}`);
-                    const requiredLevel = i * 4;
-                    if (station && unlockedLevels.includes(requiredLevel)) {
-                        station.classList.remove('locked');
-                        station.classList.add('completed');
-                    }
-                }
-                const finalTest = document.getElementById('finalTest');
-                if (finalTest && unlockedLevels.includes(20)) {
-                    finalTest.classList.remove('locked');
-                    finalTest.classList.add('completed');
+    window.onload = function() {
+        const savedProgress = localStorage.getItem('svetaQuestProgress');
+        if (savedProgress) {
+            const progress = JSON.parse(savedProgress);
+            const unlockedLevels = progress.unlockedLevels || [1];
+            const completedStations = progress.completedStations || [];
+            
+            // Разблокируем пройденные уровни
+            for (let i = 1; i <= 20; i++) {
+                const level = document.getElementById(`level${i}`);
+                if (level && unlockedLevels.includes(i)) {
+                    level.classList.remove('locked');
+                    level.classList.add('completed');
                 }
             }
-        };
-    </script>
+            
+            // Разблокируем и отмечаем пройденные станции
+            for (let i = 1; i <= 5; i++) {
+                const station = document.getElementById(`station${i}`);
+                const stationKey = `station${i}`;
+                if (station) {
+                    if (completedStations.includes(stationKey)) {
+                        station.classList.remove('locked');
+                        station.classList.add('completed');
+                    } else {
+                        const requiredLevel = i * 4;
+                        if (unlockedLevels.includes(requiredLevel)) {
+                            station.classList.remove('locked');
+                        }
+                    }
+                }
+            }
+            
+            // Разблокируем финальный тест
+            const finalTest = document.getElementById('finalTest');
+            if (finalTest && unlockedLevels.includes(20)) {
+                finalTest.classList.remove('locked');
+                finalTest.classList.add('completed');
+            }
+        }
+    };
+</script>
 </body>
 </html>
