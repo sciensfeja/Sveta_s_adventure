@@ -201,13 +201,23 @@
             <p class="subtitle">Boracay Island Adventure</p>
         </div>
         <div class="map-screen">
-            <div class="welcome-overlay">
-                <h2>🌴 Are you ready for an adventure with Sveta? 🌴</h2>
-                <p>Tap on any level to start your journey! (All levels unlocked for testing)</p>
-            </div>
-            <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
-                <path class="path-line" d="M 10 15 L 20 25 L 30 20 L 40 30 L 50 25 L 60 35 L 70 30 L 80 40 L 85 50 L 75 55 L 65 60 L 55 65 L 45 70 L 35 75 L 25 70 L 20 60 L 25 50 L 35 45 L 45 50 L 55 45 L 65 50 L 75 45 L 85 55 L 90 65 L 80 75 L 90 85" />
-            </svg>
+    <!-- 1. Добавили onclick="this.style.display='none'" 
+         Теперь при клике в любую часть этого окна оно будет закрываться -->
+    <div class="welcome-overlay" onclick="this.style.display='none'">
+        <h2>🌴 Are you ready for an adventure with Sveta? 🌴</h2>
+        <p>Tap on any level to start your journey! (All levels unlocked for testing)</p>
+        
+        <!-- 2. Добавили кнопку закрытия/старта -->
+        <!-- event.stopPropagation() нужен, чтобы клик по кнопке не срабатывал дважды -->
+        <button class="start-btn" onclick="event.stopPropagation(); this.parentElement.style.display='none';">
+            Let's Go! 🚀
+        </button>
+    </div>
+
+    <svg class="path-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path class="path-line" d="M 10 15 L 20 25 L 30 20 L 40 30 L 50 25 L 60 35 L 70 30 L 80 40 L 85 50 L 75 55 L 65 60 L 55 65 L 45 70 L 35 75 L 25 70 L 20 60 L 25 50 L 35 45 L 45 50 L 55 45 L 65 50 L 75 45 L 85 55 L 90 65 L 80 75 L 90 85" />
+    </svg>
+</div>
 
             <!-- ВСЕ УРОВНИ КЛИКАБЕЛЬНЫ - убран класс "locked" -->
             <div class="level-marker" style="left: 10%; top: 15%;" onclick="window.location.href='level1.html'">
