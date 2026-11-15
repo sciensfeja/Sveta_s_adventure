@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - Island Essentials (Listening)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .back-btn:hover { transform: scale(1.05); }
+
+        .title-section { flex: 1; text-align: center; }
+
+        h1 { color: #667eea; margin-bottom: 5px; font-size: 28px; }
+        .subtitle { color: #666; font-size: 16px; }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .card-container { position: relative; overflow: hidden; min-height: 450px; }
+
+        .question-card {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+            display: none;
+        }
+
+        .question-card.active {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .question-card.correct { border-color: #4caf50; background: #f1f8f4; }
+        .question-card.incorrect { border-color: #f44336; background: #fef1f1; }
+
+        .question-number {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        /* Большая красивая кнопка прослушивания */
+        .audio-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 25px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+            box-shadow: 0 6px 15px rgba(102, 126, 234, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .audio-btn:hover { transform: scale(1.02); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.5); }
+        .audio-btn:active { transform: scale(0.98); }
+        .audio-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .audio-icon {
+            font-size: 28px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .audio-btn.playing .audio-icon {
+            animation: soundWave 0.8s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        @keyframes soundWave {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        .listen-hint {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+
+        /* Варианты ответов */
+        .options { display: flex; flex-direction: column; gap: 12px; }
+
+        .option {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 16px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        .option:hover { border-color: #667eea; background: #f8f9ff; transform: translateX(5px); }
+        .option.selected { border-color: #667eea; background: #667eea; color: white; }
+        .option.correct-answer { border-color: #4caf50; background: #4caf50; color: white; }
+        .option.wrong-answer { border-color: #f44336; background: #f44336; color: white; }
+        .option.disabled { pointer-events: none; opacity: 0.85; }
+
+        /* Объяснение */
+        .explanation {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-radius: 12px;
+            border-left: 5px solid #ffc107;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .explanation.show { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .explanation-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d97706;
+            margin-bottom: 10px;
+        }
+
+        .explanation-word {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .explanation-meaning {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .explanation-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .explanation-tag {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-synonym { background: #d1fae5; color: #065f46; }
+        .tag-antonym { background: #fee2e2; color: #991b1b; }
+        .tag-translation { background: #dbeafe; color: #1e40af; }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex: 1;
+        }
+
+        .nav-btn:hover { transform: scale(1.05); }
+        .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .nav-btn.submit { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dot.active { background: #667eea; transform: scale(1.3); }
+        .dot.answered { background: #4caf50; }
+        .dot.wrong { background: #f44336; }
+
+        .result-screen { display: none; text-align: center; padding: 40px 20px; }
+        .result-screen.show { display: block; }
+        .result-emoji { font-size: 80px; margin-bottom: 20px; }
+        .result-title { font-size: 32px; color: #333; margin-bottom: 15px; }
+        .result-score { font-size: 24px; color: #667eea; margin-bottom: 10px; }
+        .result-message { font-size: 18px; color: #666; margin-bottom: 30px; }
+
+        .result-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .restart-btn:hover { transform: scale(1.05); }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .header { flex-direction: column; align-items: stretch; }
+            .back-btn { align-self: flex-start; }
+            h1 { font-size: 24px; }
+            .question-card { padding: 20px; }
+            .nav-btn { padding: 10px 16px; font-size: 14px; }
+            .audio-btn { padding: 20px; font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="index.html" class="back-btn">🗺️ Back to Map</a>
+            <div class="title-section">
+                <h1>🏝️ Level 3: Island Essentials</h1>
+                <p class="subtitle">🎧 Pure Listening - Listen carefully!</p>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill">0/20</div>
+        </div>
+
+        <div class="card-container" id="cardContainer"></div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prevBtn" onclick="previousQuestion()">← Previous</button>
+            <button class="nav-btn" id="nextBtn" onclick="nextQuestion()">Next →</button>
+            <button class="nav-btn submit" id="submitBtn" onclick="submitAnswers()" style="display: none;">Submit All</button>
+        </div>
+
+        <div class="dots" id="dotsContainer"></div>
+
+        <div class="result-screen" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <h2 class="result-title" id="resultTitle"></h2>
+            <p class="result-score" id="resultScore"></p>
+            <p class="result-message" id="resultMessage"></p>
+            <div class="result-buttons">
+                <button class="restart-btn" onclick="restartQuiz()">Try Again</button>
+                <a href="index.html" class="back-btn">🗺️ Back to Map</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const wordDatabase = {
+            arrange: { meaning: "To arrange things is to put them in the right place.", translation: "расставлять, организовывать", synonyms: ["organize", "prepare"], antonyms: ["disorganize"] },
+            attend: { meaning: "To attend something is to go to it.", translation: "посещать", synonyms: ["join", "participate"], antonyms: ["miss", "skip"] },
+            propose: { meaning: "To propose something is to say that it should be done.", translation: "предлагать", synonyms: ["suggest", "offer"], antonyms: ["refuse", "reject"] },
+            tail: { meaning: "The part at the back of an animal's body.", translation: "хвост", synonyms: [], antonyms: [] },
+            tear: { meaning: "To tear something means to pull it apart.", translation: "рвать, разрывать", synonyms: ["rip", "break"], antonyms: ["fix", "repair"] },
+            certain: { meaning: "Being sure about something.", translation: "уверенный", synonyms: ["sure", "confident"], antonyms: ["unsure", "doubtful"] },
+            whole: { meaning: "Complete, all of it.", translation: "целый, весь", synonyms: ["complete", "entire"], antonyms: ["partial"] },
+            contain: { meaning: "To have something inside.", translation: "содержать, вмещать", synonyms: ["hold", "include"], antonyms: ["exclude"] },
+            feed: { meaning: "To give food to someone or something.", translation: "кормить", synonyms: ["nourish"], antonyms: ["starve"] },
+            increase: { meaning: "To become bigger or more.", translation: "увеличивать", synonyms: ["grow", "raise"], antonyms: ["decrease", "reduce"] },
+            owe: { meaning: "To need to pay someone money.", translation: "быть должным", synonyms: ["indebted"], antonyms: [] },
+            raise: { meaning: "To lift up or bring up children.", translation: "воспитывать, поднимать", synonyms: ["lift", "bring up"], antonyms: ["lower"] },
+            patient: { meaning: "Able to wait without getting angry.", translation: "терпеливый", synonyms: ["calm", "tolerant"], antonyms: ["impatient"] },
+            stroll: { meaning: "To walk slowly and relaxed.", translation: "прогуливаться", synonyms: ["walk", "wander"], antonyms: ["run", "rush"] },
+            bright: { meaning: "Giving out a lot of light; smart.", translation: "яркий, умный", synonyms: ["shining", "smart"], antonyms: ["dark", "dull"] },
+            survive: { meaning: "To continue to live.", translation: "выживать", synonyms: ["live", "endure"], antonyms: ["die"] },
+            allow: { meaning: "To let someone do something.", translation: "позволять", synonyms: ["permit", "let"], antonyms: ["forbid", "prevent"] },
+            contribute: { meaning: "To give or help with something.", translation: "вносить вклад", synonyms: ["give", "help"], antonyms: [] },
+            sudden: { meaning: "Happening quickly and unexpectedly.", translation: "внезапный", synonyms: ["quick", "unexpected"], antonyms: ["gradual"] },
+            discover: { meaning: "To find something for the first time.", translation: "открывать, обнаруживать", synonyms: ["find", "uncover"], antonyms: ["hide", "lose"] }
+        };
+
+        // Теперь fullAudio содержит И предложения, И вопрос
+        const questions = [
+            {
+                fullAudio: "Sarah needs to arrange the chairs for the party. She will put them in a circle so everyone can talk to each other easily. Question: Why does Sarah put the chairs in a circle?",
+                options: [
+                    "So everyone can talk to each other",
+                    "To save space in the room",
+                    "To watch a movie together"
+                ],
+                correct: 0,
+                targetWord: "arrange"
+            },
+            {
+                fullAudio: "Many students attend the English class every week. They go there because they want to learn new words and speak with friends. Question: Why do the students go to the English class?",
+                options: [
+                    "Because their parents make them",
+                    "To learn new words and talk with friends",
+                    "To play games only"
+                ],
+                correct: 1,
+                targetWord: "attend"
+            },
+            {
+                fullAudio: "I propose we go to the beach tomorrow. The weather will be sunny, and we can swim in the ocean. Question: What is the reason for going to the beach tomorrow?",
+                options: [
+                    "The weather will be nice for swimming",
+                    "We need to buy food",
+                    "The beach is closed today"
+                ],
+                correct: 0,
+                targetWord: "propose"
+            },
+            {
+                fullAudio: "The happy dog has a long tail. When he sees his owner, the tail moves very fast from side to side. Question: What does the dog's tail show?",
+                options: [
+                    "That the dog is angry",
+                    "That the dog is happy",
+                    "That the dog is hungry"
+                ],
+                correct: 1,
+                targetWord: "tail"
+            },
+            {
+                fullAudio: "Please don't tear the old photo. It is the only picture of my grandmother, and I want to keep it forever. Question: Why shouldn't you tear the photo?",
+                options: [
+                    "Because it is too new",
+                    "Because it is a special memory of grandmother",
+                    "Because the paper is too thick"
+                ],
+                correct: 1,
+                targetWord: "tear"
+            },
+            {
+                fullAudio: "I am certain that we will pass the exam. We studied hard for two months, and we know all the answers. Question: Why is the speaker sure about passing the exam?",
+                options: [
+                    "Because the exam is very easy",
+                    "Because they studied hard and know the answers",
+                    "Because the teacher will help them"
+                ],
+                correct: 1,
+                targetWord: "certain"
+            },
+            {
+                fullAudio: "We spent the whole day at the beach. We swam, played volleyball, and ate ice cream from morning until evening. Question: How long did they stay at the beach?",
+                options: [
+                    "Only a few hours",
+                    "The entire day, from morning to evening",
+                    "Just one afternoon"
+                ],
+                correct: 1,
+                targetWord: "whole"
+            },
+            {
+                fullAudio: "This big box contains many books. Inside you can find novels, dictionaries, and school textbooks for the students. Question: What is inside the box?",
+                options: [
+                    "Only toys and games",
+                    "Different kinds of books for students",
+                    "Food and drinks"
+                ],
+                correct: 1,
+                targetWord: "contain"
+            },
+            {
+                fullAudio: "We must feed the animals every morning and evening. If we don't, they will be hungry and sad. Question: What will happen if we don't feed the animals?",
+                options: [
+                    "They will sleep more",
+                    "They will be hungry and sad",
+                    "They will run away immediately"
+                ],
+                correct: 1,
+                targetWord: "feed"
+            },
+            {
+                fullAudio: "The company will increase production next year. They need to hire more workers because many people want to buy their products. Question: Why does the company need more workers?",
+                options: [
+                    "Because current workers want to leave",
+                    "Because many people want to buy their products",
+                    "Because the boss wants a bigger office"
+                ],
+                correct: 1,
+                targetWord: "increase"
+            },
+            {
+                fullAudio: "I owe you ten dollars for the lunch yesterday. I will give you the money tomorrow when we meet at school. Question: When will the speaker pay back the money?",
+                options: [
+                    "Right now",
+                    "Tomorrow at school",
+                    "Next week"
+                ],
+                correct: 1,
+                targetWord: "owe"
+            },
+            {
+                fullAudio: "Parents must raise their children with love and patience. They need to teach them what is right and what is wrong. Question: What is an important part of raising children?",
+                options: [
+                    "Giving them a lot of money",
+                    "Teaching them with love and patience",
+                    "Letting them do whatever they want"
+                ],
+                correct: 1,
+                targetWord: "raise"
+            },
+            {
+                fullAudio: "Be patient when learning English. You will not learn everything in one day, but if you practice, you will improve. Question: Why do you need to be patient when learning English?",
+                options: [
+                    "Because English is too difficult",
+                    "Because learning takes time and practice",
+                    "Because the teacher is slow"
+                ],
+                correct: 1,
+                targetWord: "patient"
+            },
+            {
+                fullAudio: "We take a stroll along the beach every evening after dinner. We walk slowly and enjoy the beautiful sunset. Question: How do they walk during their evening stroll?",
+                options: [
+                    "Very fast to exercise",
+                    "Slowly to enjoy the sunset",
+                    "Only on weekends"
+                ],
+                correct: 1,
+                targetWord: "stroll"
+            },
+            {
+                fullAudio: "The sun is very bright today. You should wear sunglasses and a hat to protect your eyes and skin. Question: Why should you wear sunglasses today?",
+                options: [
+                    "Because it is raining",
+                    "Because the sun is very bright",
+                    "Because it is cold outside"
+                ],
+                correct: 1,
+                targetWord: "bright"
+            },
+            {
+                fullAudio: "Plants need water to survive in the hot weather. Without water, they will dry up and die in a few days. Question: What happens to plants without water in hot weather?",
+                options: [
+                    "They grow faster",
+                    "They dry up and die",
+                    "They change color"
+                ],
+                correct: 1,
+                targetWord: "survive"
+            },
+            {
+                fullAudio: "My parents allow me to go to the party, but only if I finish my homework first. They want me to be responsible. Question: What must the speaker do before going to the party?",
+                options: [
+                    "Clean the house",
+                    "Finish homework first",
+                    "Cook dinner"
+                ],
+                correct: 1,
+                targetWord: "allow"
+            },
+            {
+                fullAudio: "Everyone should contribute to the school project. Each student can bring something different, like paper, paint, or ideas. Question: How can students contribute to the project?",
+                options: [
+                    "By doing nothing",
+                    "By bringing different things like paper or ideas",
+                    "By watching others work"
+                ],
+                correct: 1,
+                targetWord: "contribute"
+            },
+            {
+                fullAudio: "The storm caused sudden damage to the house. The roof broke, and water came inside without any warning. Question: What happened during the storm?",
+                options: [
+                    "The house stayed perfect",
+                    "The roof broke and water came in without warning",
+                    "The storm lasted for a week"
+                ],
+                correct: 1,
+                targetWord: "sudden"
+            },
+            {
+                fullAudio: "Scientists discover new things every day. They find new animals, plants, and stars that people didn't know about before. Question: What do scientists find when they discover new things?",
+                options: [
+                    "Only old books",
+                    "New animals, plants, and stars",
+                    "Only numbers"
+                ],
+                correct: 1,
+                targetWord: "discover"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+
+        function renderQuestions() {
+            const container = document.getElementById('cardContainer');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+                card.id = `question-${index}`;
+                if (index === 0) card.classList.add('active');
+                
+                card.innerHTML = `
+                    <div class="question-number">Question ${index + 1} of 20</div>
+                    <button class="audio-btn" id="audioBtn-${index}" onclick="playAudio(${index})">
+                        <span class="audio-icon">🔊</span>
+                        <span class="audio-text">Listen to the audio</span>
+                    </button>
+                    <p class="listen-hint">👂 Listen carefully — the question is in the audio!</p>
+                    <div class="options">
+                        ${q.options.map((option, optIndex) => `
+                            <div class="option" onclick="selectOption(${index}, ${optIndex})" id="option-${index}-${optIndex}">
+                                ${option}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="explanation" id="explanation-${index}"></div>
+                `;
+                
+                container.appendChild(card);
+            });
+
+            renderDots();
+            updateNavigation();
+        }
+
+        function renderDots() {
+            const dotsContainer = document.getElementById('dotsContainer');
+            dotsContainer.innerHTML = '';
+            
+            questions.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (index === currentQuestion) dot.classList.add('active');
+                if (userAnswers[index] !== null) {
+                    dot.classList.add(userAnswers[index] === questions[index].correct ? 'answered' : 'wrong');
+                }
+                dot.onclick = () => goToQuestion(index);
+                dotsContainer.appendChild(dot);
+            });
+        }
+
+        function goToQuestion(index) {
+            document.querySelectorAll('.question-card').forEach(card => card.classList.remove('active'));
+            currentQuestion = index;
+            document.getElementById(`question-${index}`).classList.add('active');
+            renderDots();
+            updateNavigation();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) goToQuestion(currentQuestion + 1);
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) goToQuestion(currentQuestion - 1);
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        function playAudio(index) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(questions[index].fullAudio);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.9;
+                utterance.pitch = 1;
+                
+                const btn = document.getElementById(`audioBtn-${index}`);
+                const btnText = btn.querySelector('.audio-text');
+                btn.disabled = true;
+                btn.classList.add('playing');
+                btnText.textContent = 'Playing...';
+                
+                utterance.onend = function() {
+                    btn.disabled = false;
+                    btn.classList.remove('playing');
+                    btnText.textContent = 'Listen again';
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert('Sorry, your browser does not support text-to-speech.');
+            }
+        }
+
+        function selectOption(questionIndex, optionIndex) {
+            const q = questions[questionIndex];
+            const card = document.getElementById(`question-${questionIndex}`);
+            
+            card.querySelectorAll('.option').forEach(opt => opt.classList.add('disabled'));
+            
+            for (let i = 0; i < q.options.length; i++) {
+                const optEl = document.getElementById(`option-${questionIndex}-${i}`);
+                optEl.classList.remove('selected');
+                if (i === q.correct) optEl.classList.add('correct-answer');
+                if (i === optionIndex && i !== q.correct) optEl.classList.add('wrong-answer');
+            }
+            
+            userAnswers[questionIndex] = optionIndex;
+            
+            const isCorrect = optionIndex === q.correct;
+            card.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            showExplanation(questionIndex, isCorrect);
+            
+            updateProgress();
+            renderDots();
+        }
+
+        function showExplanation(questionIndex, isCorrect) {
+            const q = questions[questionIndex];
+            const word = q.targetWord;
+            const data = wordDatabase[word];
+            const explanationEl = document.getElementById(`explanation-${questionIndex}`);
+            
+            if (!data) {
+                explanationEl.innerHTML = `<div class="explanation-title">✅ Correct answer: <strong>${q.options[q.correct]}</strong></div>`;
+                explanationEl.classList.add('show');
+                return;
+            }
+            
+            let html = `
+                <div class="explanation-title">
+                    ${isCorrect ? '✅ Correct!' : '❌ Incorrect!'} The right answer is: <strong>${q.options[q.correct]}</strong>
+                </div>
+                <div class="explanation-word">📖 ${word}</div>
+                <div class="explanation-meaning">${data.meaning}</div>
+                <div class="explanation-row">
+                    <span class="explanation-tag tag-translation">🇷🇺 ${data.translation}</span>
+                </div>
+            `;
+            
+            if (data.synonyms && data.synonyms.length > 0) {
+                html += `<div class="explanation-row">
+                    <span class="explanation-tag tag-synonym">≈ Synonyms: ${data.synonyms.join(', ')}</span>
+                </div>`;
+            }
+            
+            if (data.antonyms && data.antonyms.length > 0) {
+                html += `<div class="explanation-row">
+                    <span class="explanation-tag tag-antonym">≠ Antonyms: ${data.antonyms.join(', ')}</span>
+                </div>`;
+            }
+            
+            explanationEl.innerHTML = html;
+            explanationEl.classList.add('show');
+        }
+
+        function updateProgress() {
+            const answered = userAnswers.filter(a => a !== null).length;
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${(answered / questions.length) * 100}%`;
+            progressFill.textContent = `${answered}/${questions.length}`;
+        }
+
+        function submitAnswers() {
+            let correctCount = userAnswers.filter((a, i) => a === questions[i].correct).length;
+            const percentage = (correctCount / questions.length) * 100;
+            const passed = percentage >= 80;
+            showResult(correctCount, percentage, passed);
+        }
+
+        function showResult(correct, percentage, passed) {
+            document.querySelector('.navigation').style.display = 'none';
+            document.getElementById('cardContainer').style.display = 'none';
+            document.getElementById('dotsContainer').style.display = 'none';
+            document.getElementById('resultScreen').classList.add('show');
+            
+            const emoji = document.getElementById('resultEmoji');
+            const title = document.getElementById('resultTitle');
+            const score = document.getElementById('resultScore');
+            const message = document.getElementById('resultMessage');
+            
+            score.textContent = `Your Score: ${correct}/20 (${percentage.toFixed(1)}%)`;
+            
+            if (passed) {
+                emoji.textContent = '🎉';
+                title.textContent = 'Congratulations!';
+                message.textContent = 'You passed the level! Great listening skills!';
+            } else {
+                emoji.textContent = '💪';
+                title.textContent = 'Keep Practicing!';
+                message.textContent = 'You need 80% to pass. Listen carefully and try again!';
+            }
+        }
+
+        function restartQuiz() {
+            userAnswers = new Array(questions.length).fill(null);
+            currentQuestion = 0;
+            
+            document.getElementById('resultScreen').classList.remove('show');
+            document.querySelector('.navigation').style.display = 'flex';
+            document.getElementById('cardContainer').style.display = 'block';
+            document.getElementById('dotsContainer').style.display = 'flex';
+            
+            renderQuestions();
+            updateProgress();
+        }
+
+        renderQuestions();
+    </script>
+</body>
+</html>
