@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 4 — Present Perfect Challenge</title>
+    <style>
+        :root {
+            --bg-gray: #F8F9FA;
+            --card-gray: #FFFFFF;
+            --text-main: #333333;
+            --text-secondary: #666666;
+            --pink-light: #FCE4EC;
+            --pink-accent: #F48FB1;
+            --purple-light: #F3E5F5;
+            --purple-accent: #BA68C8;
+            --border-color: #E0E0E0;
+            --success: #4CAF50;
+            --error: #F44336;
+            --warning: #FF9800;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--purple-accent) 0%, var(--pink-accent) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+
+        .header-menu-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: var(--purple-accent);
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .header-menu-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            width: 100%;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .game-card {
+            background: var(--card-gray);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(186, 104, 200, 0.2);
+            border-color: var(--purple-accent);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            color: var(--purple-accent);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .game-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .game-container {
+            display: none;
+            background: var(--card-gray);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-top: 20px;
+        }
+
+        .game-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            background: var(--bg-gray);
+            height: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, var(--purple-accent), var(--pink-accent));
+            height: 100%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .question-counter {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, var(--purple-light) 0%, var(--pink-light) 100%);
+            border-radius: 12px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--purple-accent);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* Game 1: Build English sentence from Russian */
+        .russian-sentence {
+            background: var(--purple-light);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--purple-accent);
+            font-weight: 600;
+            border-left: 4px solid var(--purple-accent);
+        }
+
+        .hint-note {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            min-height: 60px;
+            padding: 20px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+        }
+
+        .word-chip {
+            background: var(--pink-light);
+            color: var(--text-main);
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        .word-chip:hover {
+            background: var(--pink-accent);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .word-chip.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .answer-zone {
+            background: white;
+            border: 3px dashed var(--purple-accent);
+            border-radius: 12px;
+            padding: 25px;
+            min-height: 80px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .answer-chip {
+            background: var(--purple-accent);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .answer-chip:hover {
+            background: var(--pink-accent);
+            transform: scale(1.05);
+        }
+
+        /* Game 2: Translate English to Russian */
+        .english-sentence {
+            background: var(--pink-light);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--purple-accent);
+            font-weight: 600;
+            border-left: 4px solid var(--pink-accent);
+        }
+
+        .russian-word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+            min-height: 60px;
+            padding: 20px;
+            background: var(--bg-gray);
+            border-radius: 12px;
+        }
+
+        /* Game 3: Fill missing letters */
+        .word-with-gaps {
+            background: var(--purple-light);
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--purple-accent);
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .word-with-gaps .gap {
+            display: inline-block;
+            width: 40px;
+            height: 50px;
+            background: white;
+            border: 3px solid var(--pink-accent);
+            border-radius: 8px;
+            margin: 0 5px;
+            vertical-align: middle;
+            line-height: 50px;
+            color: var(--pink-accent);
+            font-size: 2rem;
+        }
+
+        .letter-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 15px;
+            font-size: 1.5rem;
+            text-align: center;
+            border: 3px solid var(--border-color);
+            border-radius: 12px;
+            margin: 0 auto 30px;
+            display: block;
+            text-transform: lowercase;
+        }
+
+        .letter-input:focus {
+            outline: none;
+            border-color: var(--purple-accent);
+        }
+
+        .hint-text {
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--purple-accent);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background: var(--pink-accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(244, 143, 177, 0.4);
+        }
+
+        .btn.secondary {
+            background: var(--bg-gray);
+            color: var(--purple-accent);
+            border: 2px solid var(--purple-accent);
+        }
+
+        .btn.secondary:hover {
+            background: var(--purple-light);
+        }
+
+        .btn.menu-btn {
+            background: white;
+            color: var(--text-secondary);
+            border: 2px solid var(--border-color);
+        }
+
+        .btn.menu-btn:hover {
+            background: var(--bg-gray);
+            color: var(--text-main);
+            border-color: var(--text-secondary);
+        }
+
+        .btn.success {
+            background: var(--success);
+        }
+
+        .btn.success:hover {
+            background: #45a049;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+
+        /* Feedback */
+        .feedback {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: none;
+        }
+
+        .feedback.correct {
+            background: #E8F5E9;
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .feedback.incorrect {
+            background: #FFEBEE;
+            color: var(--error);
+            border-left: 4px solid var(--error);
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .correct-answer {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            color: var(--text-main);
+        }
+
+        /* Results */
+        .results-container {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            color: var(--purple-accent);
+            margin-bottom: 20px;
+        }
+
+        .results-score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--success);
+            margin: 20px 0;
+        }
+
+        .results-message {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .mistakes-list {
+            background: var(--bg-gray);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .mistake-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--error);
+        }
+
+        .mistake-question {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .mistake-answer {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header-menu-btn {
+                position: static;
+                margin-bottom: 15px;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            .word-with-gaps {
+                font-size: 1.8rem;
+            }
+
+            .word-with-gaps .gap {
+                width: 30px;
+                height: 40px;
+                line-height: 40px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <button class="header-menu-btn" onclick="backToMenu()">🏠 Menu</button>
+        <h1>🎯 Level 4</h1>
+        <p>Present Perfect Challenge</p>
+    </header>
+
+    <main>
+        <!-- Главное меню -->
+        <div id="mainMenu">
+            <div class="menu-grid">
+                <div class="game-card" onclick="startGame(1)">
+                    <div class="game-icon">🔨</div>
+                    <h3 class="game-title">Build English Sentence</h3>
+                    <p class="game-description">Соберите английское предложение в Present Perfect из слов. Русское предложение дано. В банке есть лишние слова!</p>
+                </div>
+
+                <div class="game-card" onclick="startGame(2)">
+                    <div class="game-icon">🔄</div>
+                    <h3 class="game-title">Translate to Russian</h3>
+                    <p class="game-description">Соберите русский перевод английского предложения в Present Perfect. Есть лишние слова!</p>
+                </div>
+
+                <div class="game-card" onclick="startGame(3)">
+                    <div class="game-icon">🔤</div>
+                    <h3 class="game-title">Fill Missing Letters</h3>
+                    <p class="game-description">Впишите недостающие буквы в английских словах.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game 1: Build English sentence -->
+        <div class="game-container" id="game1">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress1" style="width: 0%;">0 / 15</div>
+            </div>
+
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="score-number" id="correct1">0</div>
+                    <div class="score-label">Correct</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-number" id="incorrect1">0</div>
+                    <div class="score-label">Incorrect</div>
+                </div>
+            </div>
+
+            <div class="question-counter" id="questionCounter1">Question 1 / 15</div>
+
+            <div class="russian-sentence" id="russianSentence1"></div>
+            <div class="hint-note">⚠️ В банке есть лишние слова — выбирайте только нужные!</div>
+
+            <div class="answer-zone" id="answerZone1"></div>
+
+            <div class="word-bank" id="wordBank1"></div>
+
+            <div class="feedback" id="feedback1"></div>
+
+            <div class="button-group">
+                <button class="btn menu-btn" onclick="backToMenu()">🏠 Menu</button>
+                <button class="btn secondary" onclick="resetAnswer1()">🔄 Reset</button>
+                <button class="btn" onclick="checkAnswer1()">✅ Check</button>
+                <button class="btn" id="nextBtn1" onclick="nextQuestion1()" style="display: none;">Next ➡️</button>
+            </div>
+        </div>
+
+        <!-- Game 2: Translate to Russian -->
+        <div class="game-container" id="game2">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress2" style="width: 0%;">0 / 15</div>
+            </div>
+
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="score-number" id="correct2">0</div>
+                    <div class="score-label">Correct</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-number" id="incorrect2">0</div>
+                    <div class="score-label">Incorrect</div>
+                </div>
+            </div>
+
+            <div class="question-counter" id="questionCounter2">Question 1 / 15</div>
+
+            <div class="english-sentence" id="englishSentence2"></div>
+            <div class="hint-note">⚠️ В банке есть лишние слова — выбирайте только нужные!</div>
+
+            <div class="answer-zone" id="answerZone2"></div>
+
+            <div class="russian-word-bank" id="wordBank2"></div>
+
+            <div class="feedback" id="feedback2"></div>
+
+            <div class="button-group">
+                <button class="btn menu-btn" onclick="backToMenu()">🏠 Menu</button>
+                <button class="btn secondary" onclick="resetAnswer2()">🔄 Reset</button>
+                <button class="btn" onclick="checkAnswer2()">✅ Check</button>
+                <button class="btn" id="nextBtn2" onclick="nextQuestion2()" style="display: none;">Next ➡️</button>
+            </div>
+        </div>
+
+        <!-- Game 3: Fill missing letters -->
+        <div class="game-container" id="game3">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress3" style="width: 0%;">0 / 15</div>
+            </div>
+
+            <div class="score-display">
+                <div class="score-item">
+                    <div class="score-number" id="correct3">0</div>
+                    <div class="score-label">Correct</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-number" id="incorrect3">0</div>
+                    <div class="score-label">Incorrect</div>
+                </div>
+            </div>
+
+            <div class="question-counter" id="questionCounter3">Question 1 / 15</div>
+
+            <div class="word-with-gaps" id="wordWithGaps3"></div>
+
+            <div class="hint-text" id="hintText3"></div>
+
+            <input type="text" class="letter-input" id="letterInput3" placeholder="Введите недостающие буквы">
+
+            <div class="feedback" id="feedback3"></div>
+
+            <div class="button-group">
+                <button class="btn menu-btn" onclick="backToMenu()">🏠 Menu</button>
+                <button class="btn" onclick="checkAnswer3()">✅ Check</button>
+                <button class="btn" id="nextBtn3" onclick="nextQuestion3()" style="display: none;">Next ➡️</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="game-container" id="results">
+            <div class="results-container">
+                <div class="results-icon" id="resultsIcon"></div>
+                <h2 class="results-title" id="resultsTitle"></h2>
+                <div class="results-score" id="resultsScore"></div>
+                <p class="results-message" id="resultsMessage"></p>
+
+                <div class="mistakes-list" id="mistakesList" style="display: none;">
+                    <h3 style="color: var(--error); margin-bottom: 15px;">❌ Mistakes to Review:</h3>
+                    <div id="mistakesContent"></div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn secondary" onclick="retryMistakes()" id="retryBtn" style="display: none;">🔄 Retry Mistakes</button>
+                    <button class="btn" onclick="backToMenu()">🏠 Back to Menu</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Сложные предложения для Game 1 (русское → английское)
+        // Добавлены лишние слова-дистракторы
+        const game1Sentences = [
+            { 
+                ru: "Я только что закончил свой урок английского языка.", 
+                en: ["I", "have", "just", "finished", "my", "English", "lesson"],
+                distractors: ["already", "her", "yesterday", "the"]
+            },
+            { 
+                ru: "Она никогда не посещала Филиппины раньше.", 
+                en: ["She", "has", "never", "visited", "the", "Philippines", "before"],
+                distractors: ["already", "him", "Thailand", "yet"]
+            },
+            { 
+                ru: "Мы уже забронировали комфортный отель.", 
+                en: ["We", "have", "already", "booked", "a", "comfortable", "hotel"],
+                distractors: ["just", "their", "expensive", "yesterday"]
+            },
+            { 
+                ru: "Он недавно переехал в новую квартиру.", 
+                en: ["He", "has", "recently", "moved", "to", "a", "new", "apartment"],
+                distractors: ["never", "house", "already", "they"]
+            },
+            { 
+                ru: "Я забыл его имя несколько дней назад.", 
+                en: ["I", "have", "forgotten", "his", "name", "a", "few", "days", "ago"],
+                distractors: ["her", "already", "week", "never"]
+            },
+            { 
+                ru: "Они путешествовали в Таиланд много раз.", 
+                en: ["They", "have", "traveled", "to", "Thailand", "many", "times"],
+                distractors: ["just", "London", "never", "once"]
+            },
+            { 
+                ru: "Я наконец понял этот сложный урок.", 
+                en: ["I", "have", "finally", "understood", "this", "difficult", "lesson"],
+                distractors: ["never", "easy", "just", "her"]
+            },
+            { 
+                ru: "Она расслабилась после долгого рабочего дня.", 
+                en: ["She", "has", "relaxed", "after", "a", "long", "working", "day"],
+                distractors: ["short", "they", "already", "night"]
+            },
+            { 
+                ru: "Мы работали удалённо всю прошлую неделю.", 
+                en: ["We", "have", "worked", "remotely", "all", "last", "week"],
+                distractors: ["never", "together", "month", "just"]
+            },
+            { 
+                ru: "Он решил эту проблему самостоятельно.", 
+                en: ["He", "has", "decided", "this", "problem", "by", "himself"],
+                distractors: ["they", "together", "never", "that"]
+            },
+            { 
+                ru: "Я видел этот интересный фильм дважды.", 
+                en: ["I", "have", "seen", "this", "interesting", "movie", "twice"],
+                distractors: ["boring", "never", "once", "her"]
+            },
+            { 
+                ru: "Они гуляли в парке рано утром.", 
+                en: ["They", "have", "walked", "in", "the", "park", "early", "morning"],
+                distractors: ["late", "beach", "never", "already"]
+            },
+            { 
+                ru: "Я запомнил это важное слово навсегда.", 
+                en: ["I", "have", "remembered", "this", "important", "word", "forever"],
+                distractors: ["unimportant", "never", "already", "sentence"]
+            },
+            { 
+                ru: "Она описала ситуацию очень подробно.", 
+                en: ["She", "has", "described", "the", "situation", "very", "clearly"],
+                distractors: ["badly", "he", "never", "problem"]
+            },
+            { 
+                ru: "Мы предпочли этот уютный отель тому шумному.", 
+                en: ["We", "have", "preferred", "this", "cosy", "hotel", "to", "that", "noisy", "one"],
+                distractors: ["spacious", "never", "they", "already"]
+            }
+        ];
+
+        // Сложные предложения для Game 2 (английское → русское)
+        const game2Sentences = [
+            { 
+                en: "I have just finished my English lesson.", 
+                ru: ["Я", "только", "что", "закончил", "свой", "урок", "английского", "языка"],
+                distractors: ["уже", "никогда", "вчера", "её"]
+            },
+            { 
+                en: "She has never visited the Philippines before.", 
+                ru: ["Она", "никогда", "не", "посещала", "Филиппины", "раньше"],
+                distractors: ["уже", "Таиланд", "вчера", "он"]
+            },
+            { 
+                en: "We have already booked a comfortable hotel.", 
+                ru: ["Мы", "уже", "забронировали", "комфортный", "отель"],
+                distractors: ["только что", "дорогой", "они", "никогда"]
+            },
+            { 
+                en: "He has recently moved to a new apartment.", 
+                ru: ["Он", "недавно", "переехал", "в", "новую", "квартиру"],
+                distractors: ["давно", "дом", "она", "уже"]
+            },
+            { 
+                en: "I have forgotten his name a few days ago.", 
+                ru: ["Я", "забыл", "его", "имя", "несколько", "дней", "назад"],
+                distractors: ["её", "неделю", "уже", "напомнил"]
+            },
+            { 
+                en: "They have traveled to Thailand many times.", 
+                ru: ["Они", "путешествовали", "в", "Таиланд", "много", "раз"],
+                distractors: ["в Лондон", "никогда", "один", "мы"]
+            },
+            { 
+                en: "I have finally understood this difficult lesson.", 
+                ru: ["Я", "наконец", "понял", "этот", "сложный", "урок"],
+                distractors: ["легкий", "никогда", "она", "только что"]
+            },
+            { 
+                en: "She has relaxed after a long working day.", 
+                ru: ["Она", "расслабилась", "после", "долгого", "рабочего", "дня"],
+                distractors: ["короткого", "они", "ночи", "уже"]
+            },
+            { 
+                en: "We have worked remotely all last week.", 
+                ru: ["Мы", "работали", "удалённо", "всю", "прошлую", "неделю"],
+                distractors: ["вместе", "месяц", "никогда", "они"]
+            },
+            { 
+                en: "He has decided this problem by himself.", 
+                ru: ["Он", "решил", "эту", "проблему", "самостоятельно"],
+                distractors: ["вместе", "они", "никогда", "ту"]
+            },
+            { 
+                en: "I have seen this interesting movie twice.", 
+                ru: ["Я", "видел", "этот", "интересный", "фильм", "дважды"],
+                distractors: ["скучный", "никогда", "один", "она"]
+            },
+            { 
+                en: "They have walked in the park early morning.", 
+                ru: ["Они", "гуляли", "в", "парке", "рано", "утром"],
+                distractors: ["поздно", "на пляже", "никогда", "мы"]
+            },
+            { 
+                en: "I have remembered this important word forever.", 
+                ru: ["Я", "запомнил", "это", "важное", "слово", "навсегда"],
+                distractors: ["неважное", "никогда", "уже", "предложение"]
+            },
+            { 
+                en: "She has described the situation very clearly.", 
+                ru: ["Она", "описала", "ситуацию", "очень", "подробно"],
+                distractors: ["плохо", "он", "никогда", "проблему"]
+            },
+            { 
+                en: "We have preferred this cosy hotel to that noisy one.", 
+                ru: ["Мы", "предпочли", "этот", "уютный", "отель", "тому", "шумному"],
+                distractors: ["просторному", "никогда", "они", "уже"]
+            }
+        ];
+
+        // Слова для Game 3 (пропущенные буквы)
+        const game3Words = [
+            { word: "appropriate", missing: [2, 5, 8], hint: "подходящий" },
+            { word: "accommodation", missing: [3, 7, 10], hint: "жилье" },
+            { word: "beginning", missing: [2, 6], hint: "начало" },
+            { word: "comfortable", missing: [3, 7], hint: "комфортный" },
+            { word: "encourage", missing: [3, 7], hint: "поощрять" },
+            { word: "experience", missing: [3, 7], hint: "опыт" },
+            { word: "remember", missing: [2, 6], hint: "помнить" },
+            { word: "understand", missing: [3, 7], hint: "понимать" },
+            { word: "preferred", missing: [2, 6], hint: "предпочел" },
+            { word: "described", missing: [3, 7], hint: "описал" },
+            { word: "traveled", missing: [2, 6], hint: "путешествовал" },
+            { word: "interesting", missing: [3, 7], hint: "интересный" },
+            { word: "beautiful", missing: [2, 6], hint: "красивый" },
+            { word: "wonderful", missing: [3, 7], hint: "чудесный" },
+            { word: "knowledge", missing: [2, 6], hint: "знание" }
+        ];
+
+        let currentGame = 0;
+        let currentQuestion = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+        let mistakes = [];
+        let isRetryMode = false;
+        let retryQuestions = [];
+
+        // Game 1 variables
+        let game1CurrentSentence = null;
+        let game1AnswerWords = [];
+        let game1AvailableWords = [];
+
+        // Game 2 variables
+        let game2CurrentSentence = null;
+        let game2AnswerWords = [];
+        let game2AvailableWords = [];
+
+        // Game 3 variables
+        let game3CurrentWord = null;
+
+        function startGame(gameNum) {
+            currentGame = gameNum;
+            currentQuestion = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            mistakes = [];
+            isRetryMode = false;
+
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById(`game${gameNum}`).classList.add('active');
+
+            if (gameNum === 1) loadQuestion1();
+            else if (gameNum === 2) loadQuestion2();
+            else if (gameNum === 3) loadQuestion3();
+        }
+
+        // GAME 1: Build English sentence
+        function loadQuestion1() {
+            const sentences = isRetryMode ? retryQuestions : game1Sentences;
+            if (currentQuestion >= sentences.length) {
+                showResults();
+                return;
+            }
+
+            game1CurrentSentence = sentences[currentQuestion];
+            game1AnswerWords = [];
+            
+            // Объединяем правильные слова и дистракторы, затем перемешиваем
+            const allWords = [...game1CurrentSentence.en, ...(game1CurrentSentence.distractors || [])];
+            game1AvailableWords = allWords.sort(() => Math.random() - 0.5);
+
+            document.getElementById('russianSentence1').textContent = game1CurrentSentence.ru;
+            document.getElementById('questionCounter1').textContent = `Question ${currentQuestion + 1} / ${sentences.length}`;
+            document.getElementById('progress1').style.width = `${(currentQuestion / sentences.length) * 100}%`;
+            document.getElementById('progress1').textContent = `${currentQuestion} / ${sentences.length}`;
+
+            renderWordBank1();
+            renderAnswerZone1();
+
+            document.getElementById('feedback1').classList.remove('show');
+            document.getElementById('nextBtn1').style.display = 'none';
+        }
+
+        function renderWordBank1() {
+            const bank = document.getElementById('wordBank1');
+            bank.innerHTML = '';
+            game1AvailableWords.forEach((word, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'word-chip';
+                chip.textContent = word;
+                chip.onclick = () => addToAnswer1(index);
+                bank.appendChild(chip);
+            });
+        }
+
+        function renderAnswerZone1() {
+            const zone = document.getElementById('answerZone1');
+            zone.innerHTML = '';
+            if (game1AnswerWords.length === 0) {
+                zone.innerHTML = '<span style="color: var(--text-secondary); font-style: italic;">Нажимайте на слова ниже, чтобы собрать предложение...</span>';
+                return;
+            }
+            game1AnswerWords.forEach((wordObj, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'answer-chip';
+                chip.textContent = wordObj.word;
+                chip.onclick = () => removeFromAnswer1(index);
+                zone.appendChild(chip);
+            });
+        }
+
+        function addToAnswer1(index) {
+            const word = game1AvailableWords[index];
+            game1AnswerWords.push({ word, originalIndex: index });
+            game1AvailableWords.splice(index, 1);
+            renderWordBank1();
+            renderAnswerZone1();
+        }
+
+        function removeFromAnswer1(answerIndex) {
+            const wordObj = game1AnswerWords[answerIndex];
+            game1AvailableWords.splice(wordObj.originalIndex, 0, wordObj.word);
+            game1AnswerWords.splice(answerIndex, 1);
+            renderWordBank1();
+            renderAnswerZone1();
+        }
+
+        function resetAnswer1() {
+            game1AnswerWords = [];
+            const allWords = [...game1CurrentSentence.en, ...(game1CurrentSentence.distractors || [])];
+            game1AvailableWords = allWords.sort(() => Math.random() - 0.5);
+            renderWordBank1();
+            renderAnswerZone1();
+        }
+
+        function checkAnswer1() {
+            const userAnswer = game1AnswerWords.map(w => w.word).join(' ');
+            const correctAnswer = game1CurrentSentence.en.join(' ');
+            const feedback = document.getElementById('feedback1');
+
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = '✓ Correct!';
+            } else {
+                incorrectCount++;
+                mistakes.push({
+                    question: game1CurrentSentence.ru,
+                    correct: correctAnswer
+                });
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `✗ Incorrect<div class="correct-answer">Correct answer: <strong>${correctAnswer}</strong></div>`;
+            }
+
+            document.getElementById('correct1').textContent = correctCount;
+            document.getElementById('incorrect1').textContent = incorrectCount;
+            document.getElementById('nextBtn1').style.display = 'inline-block';
+        }
+
+        function nextQuestion1() {
+            currentQuestion++;
+            loadQuestion1();
+        }
+
+        // GAME 2: Translate to Russian
+        function loadQuestion2() {
+            const sentences = isRetryMode ? retryQuestions : game2Sentences;
+            if (currentQuestion >= sentences.length) {
+                showResults();
+                return;
+            }
+
+            game2CurrentSentence = sentences[currentQuestion];
+            game2AnswerWords = [];
+            
+            const allWords = [...game2CurrentSentence.ru, ...(game2CurrentSentence.distractors || [])];
+            game2AvailableWords = allWords.sort(() => Math.random() - 0.5);
+
+            document.getElementById('englishSentence2').textContent = game2CurrentSentence.en;
+            document.getElementById('questionCounter2').textContent = `Question ${currentQuestion + 1} / ${sentences.length}`;
+            document.getElementById('progress2').style.width = `${(currentQuestion / sentences.length) * 100}%`;
+            document.getElementById('progress2').textContent = `${currentQuestion} / ${sentences.length}`;
+
+            renderWordBank2();
+            renderAnswerZone2();
+
+            document.getElementById('feedback2').classList.remove('show');
+            document.getElementById('nextBtn2').style.display = 'none';
+        }
+
+        function renderWordBank2() {
+            const bank = document.getElementById('wordBank2');
+            bank.innerHTML = '';
+            game2AvailableWords.forEach((word, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'word-chip';
+                chip.textContent = word;
+                chip.onclick = () => addToAnswer2(index);
+                bank.appendChild(chip);
+            });
+        }
+
+        function renderAnswerZone2() {
+            const zone = document.getElementById('answerZone2');
+            zone.innerHTML = '';
+            if (game2AnswerWords.length === 0) {
+                zone.innerHTML = '<span style="color: var(--text-secondary); font-style: italic;">Нажимайте на слова ниже, чтобы собрать перевод...</span>';
+                return;
+            }
+            game2AnswerWords.forEach((wordObj, index) => {
+                const chip = document.createElement('div');
+                chip.className = 'answer-chip';
+                chip.textContent = wordObj.word;
+                chip.onclick = () => removeFromAnswer2(index);
+                zone.appendChild(chip);
+            });
+        }
+
+        function addToAnswer2(index) {
+            const word = game2AvailableWords[index];
+            game2AnswerWords.push({ word, originalIndex: index });
+            game2AvailableWords.splice(index, 1);
+            renderWordBank2();
+            renderAnswerZone2();
+        }
+
+        function removeFromAnswer2(answerIndex) {
+            const wordObj = game2AnswerWords[answerIndex];
+            game2AvailableWords.splice(wordObj.originalIndex, 0, wordObj.word);
+            game2AnswerWords.splice(answerIndex, 1);
+            renderWordBank2();
+            renderAnswerZone2();
+        }
+
+        function resetAnswer2() {
+            game2AnswerWords = [];
+            const allWords = [...game2CurrentSentence.ru, ...(game2CurrentSentence.distractors || [])];
+            game2AvailableWords = allWords.sort(() => Math.random() - 0.5);
+            renderWordBank2();
+            renderAnswerZone2();
+        }
+
+        function checkAnswer2() {
+            const userAnswer = game2AnswerWords.map(w => w.word).join(' ');
+            const correctAnswer = game2CurrentSentence.ru.join(' ');
+            const feedback = document.getElementById('feedback2');
+
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = '✓ Correct!';
+            } else {
+                incorrectCount++;
+                mistakes.push({
+                    question: game2CurrentSentence.en,
+                    correct: correctAnswer
+                });
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `✗ Incorrect<div class="correct-answer">Correct answer: <strong>${correctAnswer}</strong></div>`;
+            }
+
+            document.getElementById('correct2').textContent = correctCount;
+            document.getElementById('incorrect2').textContent = incorrectCount;
+            document.getElementById('nextBtn2').style.display = 'inline-block';
+        }
+
+        function nextQuestion2() {
+            currentQuestion++;
+            loadQuestion2();
+        }
+
+        // GAME 3: Fill missing letters
+        function loadQuestion3() {
+            const words = isRetryMode ? retryQuestions : game3Words;
+            if (currentQuestion >= words.length) {
+                showResults();
+                return;
+            }
+
+            game3CurrentWord = words[currentQuestion];
+            
+            let displayWord = '';
+            for (let i = 0; i < game3CurrentWord.word.length; i++) {
+                if (game3CurrentWord.missing.includes(i)) {
+                    displayWord += '<span class="gap">_</span>';
+                } else {
+                    displayWord += game3CurrentWord.word[i];
+                }
+            }
+
+            document.getElementById('wordWithGaps3').innerHTML = displayWord;
+            document.getElementById('hintText3').textContent = `Hint: ${game3CurrentWord.hint}`;
+            document.getElementById('letterInput3').value = '';
+            document.getElementById('questionCounter3').textContent = `Question ${currentQuestion + 1} / ${words.length}`;
+            document.getElementById('progress3').style.width = `${(currentQuestion / words.length) * 100}%`;
+            document.getElementById('progress3').textContent = `${currentQuestion} / ${words.length}`;
+
+            document.getElementById('feedback3').classList.remove('show');
+            document.getElementById('nextBtn3').style.display = 'none';
+            document.getElementById('letterInput3').focus();
+        }
+
+        function checkAnswer3() {
+            const userInput = document.getElementById('letterInput3').value.toLowerCase();
+            const correctLetters = game3CurrentWord.missing.map(i => game3CurrentWord.word[i]).join('');
+            const feedback = document.getElementById('feedback3');
+
+            if (userInput === correctLetters) {
+                correctCount++;
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = '✓ Correct!';
+                
+                let displayWord = '';
+                for (let i = 0; i < game3CurrentWord.word.length; i++) {
+                    if (game3CurrentWord.missing.includes(i)) {
+                        displayWord += `<span class="gap" style="background: #E8F5E9; color: var(--success);">${game3CurrentWord.word[i]}</span>`;
+                    } else {
+                        displayWord += game3CurrentWord.word[i];
+                    }
+                }
+                document.getElementById('wordWithGaps3').innerHTML = displayWord;
+            } else {
+                incorrectCount++;
+                mistakes.push({
+                    question: game3CurrentWord.hint,
+                    correct: game3CurrentWord.word
+                });
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `✗ Incorrect<div class="correct-answer">Correct word: <strong>${game3CurrentWord.word}</strong> (missing: ${correctLetters})</div>`;
+                
+                let displayWord = '';
+                for (let i = 0; i < game3CurrentWord.word.length; i++) {
+                    if (game3CurrentWord.missing.includes(i)) {
+                        displayWord += `<span class="gap" style="background: #FFEBEE; color: var(--error);">${game3CurrentWord.word[i]}</span>`;
+                    } else {
+                        displayWord += game3CurrentWord.word[i];
+                    }
+                }
+                document.getElementById('wordWithGaps3').innerHTML = displayWord;
+            }
+
+            document.getElementById('correct3').textContent = correctCount;
+            document.getElementById('incorrect3').textContent = incorrectCount;
+            document.getElementById('nextBtn3').style.display = 'inline-block';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('letterInput3').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    checkAnswer3();
+                }
+            });
+        });
+
+        function nextQuestion3() {
+            currentQuestion++;
+            loadQuestion3();
+        }
+
+        // Show results
+        function showResults() {
+            const totalQuestions = isRetryMode ? retryQuestions.length : 15;
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+            const passed = percentage >= 80;
+
+            document.getElementById(`game${currentGame}`).classList.remove('active');
+            document.getElementById('results').classList.add('active');
+
+            document.getElementById('resultsIcon').textContent = passed ? '🎉' : '📚';
+            document.getElementById('resultsTitle').textContent = passed ? 'Excellent!' : 'Keep Practicing!';
+            document.getElementById('resultsScore').textContent = `${correctCount} / ${totalQuestions} (${percentage}%)`;
+            
+            if (passed) {
+                document.getElementById('resultsMessage').textContent = 'You passed! Great job with Present Perfect!';
+                document.getElementById('retryBtn').style.display = 'none';
+            } else {
+                document.getElementById('resultsMessage').textContent = 'You need 80% to pass. Review your mistakes and try again!';
+                if (mistakes.length > 0) {
+                    document.getElementById('retryBtn').style.display = 'inline-block';
+                    document.getElementById('mistakesList').style.display = 'block';
+                    
+                    let mistakesHTML = '';
+                    mistakes.forEach(m => {
+                        mistakesHTML += `
+                            <div class="mistake-item">
+                                <div class="mistake-question">Question: ${m.question}</div>
+                                <div class="mistake-answer">Answer: ${m.correct}</div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('mistakesContent').innerHTML = mistakesHTML;
+                }
+            }
+        }
+
+        function retryMistakes() {
+            isRetryMode = true;
+            retryQuestions = currentGame === 1 
+                ? mistakes.map(m => game1Sentences.find(s => s.ru === m.question))
+                : currentGame === 2
+                ? mistakes.map(m => game2Sentences.find(s => s.en === m.question))
+                : mistakes.map(m => game3Words.find(w => w.hint === m.question));
+
+            currentQuestion = 0;
+            correctCount = 0;
+            incorrectCount = 0;
+            mistakes = [];
+
+            document.getElementById('results').classList.remove('active');
+            document.getElementById(`game${currentGame}`).classList.add('active');
+
+            if (currentGame === 1) loadQuestion1();
+            else if (currentGame === 2) loadQuestion2();
+            else if (currentGame === 3) loadQuestion3();
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-container').forEach(c => c.classList.remove('active'));
+            document.getElementById('mainMenu').style.display = 'block';
+            document.getElementById('mistakesList').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
